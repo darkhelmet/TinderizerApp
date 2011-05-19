@@ -7,7 +7,7 @@ require 'mail'
 require 'json'
 
 class Async
-  Config = JSON.parse(File.read('config.json'))
+  Config = JSON.parse(File.read('config/config.json'))
 
   attr_reader :extractor, :pandoc, :kindlegen, :email, :error
 
