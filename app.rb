@@ -4,6 +4,8 @@ require 'bundler/setup'
 require 'sinatra'
 require 'newrelic_rpm'
 require 'json'
+require 'active_support'
+ActiveSupport::JSON.backend = :JSONGem
 require 'hoptoad_notifier'
 
 HoptoadNotifier.configure do |config|
@@ -16,6 +18,16 @@ require 'redis'
 require 'digest/sha1'
 require 'lib/sinatra/render'
 require 'async'
+
+# jruby fails me: http://jira.codehaus.org/browse/JRUBY-5529
+require 'net/http' # Just to ensure that's loaded
+Net::BufferedIO.class_eval do
+  BUFSIZE = 1024 * 16
+
+  def rbuf_fill
+    timeout(@read_timeout) { @rbuf << @io.sysread(BUFSIZE) }
+  end
+end
 
 configure do
   disable(:lock)

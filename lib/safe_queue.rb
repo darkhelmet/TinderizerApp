@@ -1,5 +1,6 @@
 require 'girl_friday'
 require 'user'
+require 'loggly'
 
 module SafeQueue
   class << self
@@ -8,7 +9,8 @@ module SafeQueue
         begin
           block.call(message)
         rescue Exception => boom
-          User.notify(Redis.new, message[:key], "Unexpected error occurred. Developer notified.")
+          User.notify(Redis.new, message[:key], "Unexpected error occurred; processing failed. Developer notified.")
+          Loggly.error("Caught error in queue #{queue}: #{boom.message}")
           HoptoadNotifier.notify_or_ignore(boom)
         end
       end

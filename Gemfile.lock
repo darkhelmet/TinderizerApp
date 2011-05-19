@@ -3,6 +3,7 @@ GEM
   specs:
     RedCloth (4.2.7-java)
     activesupport (3.0.7)
+    bouncy-castle-java (1.5.0146.1)
     builder (3.0.0)
     girl_friday (0.9.1)
     haml (3.1.1)
@@ -10,6 +11,8 @@ GEM
       activesupport
       builder
     i18n (0.5.0)
+    jruby-openssl (0.7.4)
+      bouncy-castle-java
     jruby-rack (1.0.8)
     json (1.5.1-java)
     mail (2.3.0)
@@ -45,6 +48,7 @@ DEPENDENCIES
   girl_friday (~> 0.9.1)
   haml (~> 3.1.1)
   hoptoad_notifier (~> 2.4.9)
+  jruby-openssl (~> 0.7.4)
   json (~> 1.5.1)
   mail (~> 2.3.0)
   newrelic_rpm (~> 3.0.0)

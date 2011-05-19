@@ -14,3 +14,4 @@ gem 'RedCloth', '~> 4.2.7' # Textile
 gem 'json', '~> 1.5.1' # JSON
 gem 'hoptoad_notifier', '~> 2.4.9' # Errors
 gem 'newrelic_rpm', '~> 3.0.0' # Performance monitoring
+gem 'jruby-openssl', '~> 0.7.4' # SSL stuff
