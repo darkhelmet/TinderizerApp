@@ -1,5 +1,4 @@
 require 'girl_friday'
-require 'hoptoad_notifier'
 require 'user'
 
 module SafeQueue

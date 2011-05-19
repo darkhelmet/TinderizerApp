@@ -21,13 +21,21 @@ class Async
 
     @extractor = SafeQueue.build(:extractor) do |message|
       email, url, key = message.values_at(:email, :url, :key)
-      out = File.join(tmp, "#{key}.html")
-      File.open(out, 'w') do |f|
-        f.write(File.read('test.html'))
+      readability = Readability.new(url)
+      tuple = readability.summary
+      element, title = tuple._1, tuple._2
+      if element.nil?
+        User.notify(Redis.new, key, 'Failed extracting this page. Developer notified.')
+        async.error << "Failed extracting URL: #{url}"
+      else
+        out = File.join(tmp, "#{key}.html")
+        File.open(out, 'w') do |f|
+          f.write(element.to_s)
+        end
+        User.notify(Redis.new, key, 'First stage finished.')
+        message.merge!(html: out, title: title)
+        async.pandoc << message
       end
-      User.notify(Redis.new, key, 'First stage finished.')
-      message.merge!(html: out, title: 'Compiler')
-      async.pandoc << message
     end
 
     @pandoc = SafeQueue.build(:pandoc) do |message|
