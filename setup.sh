@@ -139,3 +139,16 @@ http {
 END
 
 sudo /etc/init.d/nginx restart
+
+cat | sudo tee /etc/init/kindlebility.conf <<END
+description "kindlebility"
+
+start on runlevel [2345]
+stop on runlevel [06]
+
+chdir /home/darkhelmet/kindlebility3
+
+respawn
+
+exec sudo -u darkhelmet ./production.sh
+END
