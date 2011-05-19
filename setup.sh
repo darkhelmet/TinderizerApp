@@ -80,6 +80,7 @@ wget http://jruby.org.s3.amazonaws.com/downloads/1.6.1/jruby-bin-$jruby_version.
 tar zxf jruby-bin-$jruby_version.tar.gz
 sudo mv jruby-$jruby_version /opt/jruby
 
+# nginx for the proxy
 sudo add-apt-repository ppa:nginx
 sudo aptitude update
 sudo aptitude install nginx
@@ -141,6 +142,7 @@ END
 
 sudo /etc/init.d/nginx restart
 
+# Upstart script for the app
 cat | sudo tee /etc/init/kindlebility.conf <<END
 description "kindlebility"
 
@@ -153,3 +155,7 @@ respawn
 
 exec sudo -u darkhelmet ./production.sh
 END
+
+# scala
+wget http://www.scala-lang.org/downloads/distrib/files/scala-2.9.0.final-installer.jar
+sudo java -jar scala-2.9.0.final-installer.jar
