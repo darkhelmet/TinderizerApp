@@ -5,6 +5,7 @@ work/
 log/*
 tmp/*
 config/config.json
+config/newrelic.yml
 /*.epub
 /*.mobi
 /*.html

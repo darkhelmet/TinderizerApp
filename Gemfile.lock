@@ -2,8 +2,13 @@ GEM
   remote: http://rubygems.org/
   specs:
     RedCloth (4.2.7-java)
+    activesupport (3.0.7)
+    builder (3.0.0)
     girl_friday (0.9.1)
     haml (3.1.1)
+    hoptoad_notifier (2.4.9)
+      activesupport
+      builder
     i18n (0.5.0)
     jruby-rack (1.0.8)
     json (1.5.1-java)
@@ -12,6 +17,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.16)
+    newrelic_rpm (3.0.0)
     polyglot (0.3.1)
     postmark (0.9.6)
     rack (1.2.2)
@@ -38,8 +44,10 @@ DEPENDENCIES
   RedCloth (~> 4.2.7)
   girl_friday (~> 0.9.1)
   haml (~> 3.1.1)
+  hoptoad_notifier (~> 2.4.9)
   json (~> 1.5.1)
   mail (~> 2.3.0)
+  newrelic_rpm (~> 3.0.0)
   postmark (~> 0.9.6)
   rake (~> 0.8.7)
   redis (~> 2.2.0)

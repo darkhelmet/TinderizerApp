@@ -12,3 +12,5 @@ gem 'rake', '~> 0.8.7', :require => nil # Explicitly have this, because we are g
 gem 'trinidad', '~> 1.1.1', :require => nil # Webserver
 gem 'RedCloth', '~> 4.2.7' # Textile
 gem 'json', '~> 1.5.1' # JSON
+gem 'hoptoad_notifier', '~> 2.4.9' # Errors
+gem 'newrelic_rpm', '~> 3.0.0' # Performance monitoring

@@ -2,26 +2,34 @@ $: << File.expand_path(File.join('.', 'lib'))
 
 require 'bundler/setup'
 require 'sinatra'
+require 'newrelic_rpm'
+require 'json'
+require 'hoptoad_notifier'
+
+HoptoadNotifier.configure do |config|
+  config.api_key = JSON.parse(File.read('config/config.json'))['hoptoad']
+end
+
 require 'haml'
 require 'yuicompressor'
-require 'json'
 require 'redis'
 require 'digest/sha1'
-require 'rack/deflater'
 require 'lib/sinatra/render'
 require 'async'
 
 configure do
   disable(:lock)
   set(:async, Async.new)
+  # Always reload bookmarklet in development mode
   set(:bookmarklet, -> { File.read('public/bookmarklet.js') })
 end
 
 configure :production do
+  use(HoptoadNotifier::Rack)
   set(:haml, ugly: true)
+  # But in production, compress and cache it
   bookmarklet = YUICompressor.compress_js(settings.bookmarklet, :munge => true)
   set(:bookmarklet, bookmarklet)
-  use Rack::Deflater
 end
 
 before do

@@ -81,6 +81,7 @@ tar zxf jruby-bin-$jruby_version.tar.gz
 sudo mv jruby-$jruby_version /opt/jruby
 
 sudo add-apt-repository ppa:nginx
+sudo aptitude update
 sudo aptitude install nginx
 
 cat | sudo tee /etc/nginx/nginx.conf <<END
