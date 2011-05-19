@@ -4,7 +4,7 @@ sudo aptitude update
 sudo aptitude safe-upgrade
 
 # Install some stuff
-sudo aptitude install htop vim build-essential curl git-core libtcmalloc-minimal0 zlib1g-dev libssl-dev libreadline5-dev strace ltrace tcpdump bash-completion libgmp3-dev libglut3-dev fail2ban denyhosts tree rake
+sudo aptitude install htop vim build-essential curl git-core libtcmalloc-minimal0 zlib1g-dev libssl-dev libreadline5-dev strace ltrace tcpdump bash-completion libgmp3-dev libglut3-dev fail2ban denyhosts tree rake python-software-properties
 
 # Setup firewall
 sudo aptitude install ufw
@@ -80,3 +80,62 @@ wget http://jruby.org.s3.amazonaws.com/downloads/1.6.1/jruby-bin-$jruby_version.
 tar zxf jruby-bin-$jruby_version.tar.gz
 sudo mv jruby-$jruby_version /opt/jruby
 
+sudo add-apt-repository ppa:nginx
+sudo aptitude install nginx
+
+cat | sudo tee /etc/nginx/nginx.conf <<END
+user www-data;
+worker_processes 4;
+pid /var/run/nginx.pid;
+
+events {
+  worker_connections 1024;
+}
+
+http {
+  keepalive_timeout 65;
+	server_tokens off;
+
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	##
+	# Logging Settings
+	##
+
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	##
+	# Gzip Settings
+	##
+
+	gzip on;
+	gzip_disable "msie6";
+
+  gzip_vary on;
+  gzip_proxied any;
+  gzip_comp_level 6;
+  gzip_buffers 16 8k;
+  gzip_http_version 1.1;
+  gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+	##
+	# Virtual Host Configs
+	##
+
+  server {
+    listen 80;
+
+    location / {
+      proxy_set_header  X-Real-IP \$remote_addr;
+      proxy_set_header  X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header  Host \$http_host;
+      proxy_redirect    off;
+      proxy_pass        http://127.0.0.1:3000;
+    }
+  }
+}
+END
+
+sudo /etc/init.d/nginx restart
