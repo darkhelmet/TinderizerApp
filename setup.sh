@@ -62,10 +62,21 @@ pre-start script
   fi
 end script
 
-exec sudo -u darkhelmet redis-server /etc/redis.conf
+exec sudo -u darkhelmet /usr/local/bin/redis-server /etc/redis.conf
 END
 
-# Install sbt
-echo 'java -Xmx512M -jar `dirname $0`/sbt-launch.jar "$@"' | sudo tee /usr/local/bin/sbt
-sudo chmod +x /usr/local/bin/sbt
-sudo curl http://simple-build-tool.googlecode.com/files/sbt-launch-0.7.7.jar -o /usr/local/bin/sbt-launch.jar
+sudo start redis
+
+# Install Java
+echo "deb http://archive.canonical.com/ lucid partner" | sudo tee /etc/apt/sources.list.d/java.list
+sudo aptitude update
+echo 'sun-java6-bin shared/accepted-sun-dlj-v1-1 boolean true' | sudo debconf-set-selections
+sudo aptitude install sun-java6-jdk
+
+jruby_version=1.6.1
+
+# Install jruby
+wget http://jruby.org.s3.amazonaws.com/downloads/1.6.1/jruby-bin-$jruby_version.tar.gz
+tar zxf jruby-bin-$jruby_version.tar.gz
+sudo mv jruby-$jruby_version /opt/jruby
+
