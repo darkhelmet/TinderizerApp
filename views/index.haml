@@ -1,22 +1,53 @@
+%link{ :href => '/static/skin.css', :rel => 'stylesheet', :type => 'text/css', :media => 'screen,handheld' }
+/[if lte IE 7]
+  %link{ :href => '/static/skin.ie7.css', :rel => 'stylesheet', :type => 'text/css', :media => 'screen,handheld' }
+/[if lte IE 8]
+  %link{ :href => '/static/skin.ie8.css', :rel => 'stylesheet', :type => 'text/css', :media => 'screen,handheld' }
+%script{ :type => 'text/javascript', :src => '/static/slidedeck.jquery.js' }
 .center
-  %small#tagline Sending articles to your Kindle, one click at a time!
-  %iframe#video{ :src => 'http://player.vimeo.com/video/17458819?byline=0&amp;portrait=0', :width => '400', :height => '250', :frameborder => '0' }
+  #slidedeck_container.skin-literally
+    %dl.slidedeck
+      / Part 1: The problem
+      %dt The Problem
+      %dd
+        %ul.slidesVertical
+          %li
+            %p
+              The Amazon Kindle is great.
+          %li kindlebility solves this
+          %li articles on your kindle
+      / Part 2: The solution
+      %dt The Solution
+      %dd
+        %ul.slidesVertical
+          %li kindlebility
+          %li Make the bookmarklet
+          %li Install it to your bookmarks bar
+          %li Go to kindle.com
+          %li setup the email
+          %li browser
+          %li click
   %small#blog
-    Want more than just a silly screencast and a textbox asking for an email?
+    Want more than some silly slideshow and a textbox asking for an email?
     %a{ :href => 'http://blog.darkhax.com/2011/01/20/the-what-why-and-how-of-kindlebility' } Read This!
   #form
     %label.text_shadow{ :for => 'email' } Your Kindle Email:
     %input#email.round{ :type => 'text', :placeholder => 'johndoe@kindle.com' }
   #extra
     %br
-    %small Drag the link below to your bookmarks bar, and add
-    %small
+    %p Drag the link below to your bookmarks bar, and add
+    %p
       %strong kindle@darkhelmetlive.com
-    %small to your Kindle Approved E-mail List
+    %p to your Kindle Approved E-mail List
     %br
     %a#bookmarklet{ :href => '#' }
     %br
-    %a#iosLink{ :href => '#' } On an iPad/iPhone/Android/whatever?
     %br
-    %textarea#ios
+    %a#iosLink{ :href => '#' } On an iPad or other iOS device?
+    %br
+    #ios
+      %p.description Bookmark this page, and replace the URL of the bookmark you just made with this Javascript code:
+      %textarea
   %br
+  :javascript
+    $('.slidedeck').slidedeck().vertical();

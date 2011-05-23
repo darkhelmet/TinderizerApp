@@ -1,35 +1,29 @@
-* {
-  font-size: 130%;
-}
-
 body {
   font-family: 'Josefin Slab', arial, serif;
 }
 
-h1 {
+#main {
   font-family: 'Lobster', arial, serif;
-  font-size: 300%;
+  font-size: 100px;
   margin: 0px auto;
 }
 
 #tagline {
   display: block;
   margin-bottom: 30px;
-}
-
-#video {
-  display: block;
-  margin: 0px auto;
-  margin-bottom: 15px;
+  font-size: 110%;
 }
 
 #blog {
   display: block;
   margin-bottom: 30px;
+  font-size: 130%;
 }
 
 #footer {
   display: block;
+  margin: 10px auto;
+  font-size: 110%;
 }
 
 .center {
@@ -48,14 +42,14 @@ h1 {
   font-size: 50%;
 }
 
-#ios {
+#ios textarea {
   font-size: 12px;
   height: 100px;
   width: 400px;
 }
 
-small {
-  font-size: 50%;
+#ios .description {
+  font-size: 18px;
 }
 
 .round {
@@ -74,8 +68,29 @@ small {
   text-shadow: rgba(0,0,0,0.25) 0px 0px 25px;
 }
 
+#slidedeck_container {
+  margin: 0px auto 25px auto;
+  width: 900px;
+  height: 400px;
+}
+
+dl.slidedeck {
+  height: 400px;
+}
+
 #column {
   margin: 0px auto 25px auto;
   width: 800px;
+}
 
+#form > * {
+  font-size: 400%;
+}
+
+#extra * {
+  font-size: 150%;
+}
+
+#bookmarklet {
+  font-size: 400%;
 }

@@ -35,7 +35,7 @@ $(document).ready(function() {
       document.getElementsByTagName('head')[0].appendChild(script); \
     })();";
     $('#bookmarklet').html('Send to my Kindle!').attr('href', script);
-    $('#ios').html(script);
+    $('#ios textarea').html(script);
   });
 
   $('#iosLink').click(function(event) {
