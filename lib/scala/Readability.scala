@@ -16,6 +16,10 @@ package com.darkhax
 import scala.collection.JavaConversions._
 import scala.util.matching.Regex
 
+import java.net.URL
+import java.security.MessageDigest
+import java.math.BigInteger
+
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
@@ -39,7 +43,7 @@ class Readability(url : String) {
     val doc = Jsoup.connect(url).get
 
     // DO IT!
-    def summary() : (Element, Element) = {
+    def summary() : (Element, Element, java.util.Map[String, String]) = {
         removeScripts()
 
         // TODO: Handle multiple pages
@@ -51,18 +55,34 @@ class Readability(url : String) {
         val content = extractArticle(doc.clone)
 
         content match {
-            case None          => (null, null)
+            case None          => (null, null, null)
             case Some(article) => {
                 div.appendChild(title)
                 div.appendChild(article)
 
                 postProcessContent(div)
 
+                val imageMap = getImageMap(div, new URL(url))
+
                 // TODO: Handle multiple pages
 
-                (div, title)
+                (div, title, imageMap)
             }
         }
+    }
+
+    // Should return a java.util.Map[String, String], but specifying failed to work.
+    // Just let the type inference do its job.
+    private def getImageMap(elem : Element, root : URL) = {
+        val sha = MessageDigest.getInstance("SHA")
+        elem.getElementsByTag("img").map { img =>
+            val url = new URL(root, img.attr("src"))
+            val originalUrl = url.toString
+            val hash = new BigInteger(1, sha.digest(originalUrl.getBytes)).toString(16)
+            val newUrl = hash + "." + url.getPath.split('.').last
+            img.attr("src", newUrl)
+            (originalUrl, newUrl)
+        }.toList.distinct.toMap
     }
 
     private def postProcessContent(elem : Element) {
