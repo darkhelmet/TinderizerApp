@@ -1,5 +1,3 @@
-libs_dir: lib/java
-classes_dir: lib/java
 rackup: config.ru
 jruby_max_runtimes: 1
 jruby_min_runtimes: 1
