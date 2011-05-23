@@ -325,6 +325,7 @@ class Readability(url : String) {
         scores
     }
 
+    // CORRECT
     private def initialScore(elem : Element, shouldScoreClasses : Boolean) : Double = {
         val initial = scoreClasses(elem, shouldScoreClasses)
         val extra = elem.tagName match {
@@ -337,8 +338,11 @@ class Readability(url : String) {
         extra + initial
     }
 
+    // CORRECT
     private def scoreClasses(elem : Element, shouldScoreClasses : Boolean) : Double = {
         var weight = 0.0
+
+        // TODO: Refactor
         if (shouldScoreClasses) {
             if (Readability.regexes("negative").findFirstIn(elem.className) != None) {
                 weight -= 25
