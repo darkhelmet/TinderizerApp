@@ -10,23 +10,111 @@
       / Part 1: The problem
       %dt The Problem
       %dd
-        %ul.slidesVertical
-          %li
+        %ul.slidesVertical.part_one
+          %li.vs1
             %p
-              The Amazon Kindle is great.
-          %li kindlebility solves this
-          %li articles on your kindle
+              The
+              %a{ :href => 'http://kindle.com/' } Amazon Kindle
+              is great.
+            %p If all you read is books.
+            %p But you don't, do you?
+            %p You're on the web right now,
+            %p and that means you probably read stuff on the web.
+            %a.vsnext{ :href => '#' } Keep Reading...
+          %li.vs2
+            %p
+              And
+              %a{ :href => 'https://www.readability.com/' } reading on the web is fine.
+            %p But you've got stuff to do,
+            %p and can't read everything right now.
+            %p Wouldn't it be nice to read it on your Kindle?
+            %p
+              %a.vsnext{ :href => '#' } Well...
+          %li.vs3
+            %p Kindlebility can send most articles
+            %p
+              on the web
+              %span.si straight to your Kindle!
+            %p You can set it up in just a few minutes.
+            %p
+              There's
+              %span.si no signup,
+              I don't keep
+              %span.si any information,
+            %p
+              and if you want, you can even
+              %a{ :href => 'https://github.com/darkhelmet/kindlebility3' } view the code!
+            %a.hsnext{ :href => '#' } Set up Kindlebility!
       / Part 2: The solution
       %dt The Solution
       %dd
-        %ul.slidesVertical
-          %li kindlebility
-          %li Make the bookmarklet
-          %li Install it to your bookmarks bar
-          %li Go to kindle.com
-          %li setup the email
-          %li browser
-          %li click
+        %ul.slidesVertical.part_two
+          %li.vs1
+            %p Kindlebility uses a bookmarklet to do the work
+            %p It's like a bookmark, but runs Javascript,
+            %p instead of going to a URL.
+            %p First you need to make the bookmarklet,
+            %p then you must allow me to send you things.
+            %p
+              That's it!
+              %a.vsnext{ :href => '#' } Make the bookmarklet
+          %li.vs2
+            %p
+              Enter your
+              %em Kindle Email
+              in the big box below.
+            %p
+              Get it from
+              %a{ :href => 'http://kindle.com/' } Kindle.com
+              under
+              %em Manage Your Kindle
+            %img{ :src => 'http://img.skitch.com/20110523-c4uhmkajachphpn849un9j1k5h.jpg' }
+            %p
+              Press
+              %em Enter
+              or click outside the box.
+            %p
+              %a.vsnext{ :href => '#' } What's next?
+          %li.vs3
+            %p Drag the bookmarklet to your bookmarks bar.
+            %img{ :src => 'http://img.skitch.com/20110523-jru4y8nyd7c4dcwif37x44fejq.jpg' }
+            %p For help with your specific browser:
+            %p
+              %a{ :href => '/chrome', :target => '_blank' } Google Chrome
+              &middot;
+              %a{ :href => '/firefox', :target => '_blank' } Firefox
+              &middot;
+              %a{ :href => '/safari', :target => '_blank' } Safari
+              &middot;
+              %a{ :href => '/ie', :target => '_blank' } Internet Explorer
+            %p
+              %a.vsnext{ :href => '#' } All done!
+          %li.vs4
+            %p
+              Add
+              %span.si kindle@darkhelmetlive.com
+              to your
+            %p
+              %span.si Kindle Approved Email List
+            %img{ :src => 'http://img.skitch.com/20110523-jykm4xnmsg783thqmd6qtmdcab.jpg' }
+            %br
+            %br
+            %a.vsnext{ :href => '#' } Now what?
+          %li.vs5
+            %p Now browse to an interesting article,
+            %p
+              %a{ :href => 'http://blog.darkhax.com/2011/01/20/the-what-why-and-how-of-kindlebility', :target => '_blank' } like this one,
+            %p and click the bookmarklet.
+            %p It will show some progress, and then disappear.
+            %p
+              %a.vsnext{ :href => '#' } Anything else?
+          %li.vs6
+            %p Turn your Kindle on; it should download to it soon.
+            %p
+              Check the status on the
+              %em Manage Your Kindle
+              page:
+            %img{ :src => 'http://img.skitch.com/20110523-nwbkgekhnju9j7g93hbjhgbrxs.jpg' }
   %small#blog
     Want more than some silly slideshow and a textbox asking for an email?
     %a{ :href => 'http://blog.darkhax.com/2011/01/20/the-what-why-and-how-of-kindlebility' } Read This!
@@ -51,3 +139,11 @@
   %br
   :javascript
     $('.slidedeck').slidedeck().vertical();
+    $('a.vsnext').click(function() {
+      $('.slidedeck').slidedeck().vertical().next();
+      return false;
+    });
+    $('a.hsnext').click(function() {
+      $('.slidedeck').slidedeck().next();
+      return false;
+    });

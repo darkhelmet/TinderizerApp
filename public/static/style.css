@@ -94,3 +94,24 @@ dl.slidedeck {
 #bookmarklet {
   font-size: 400%;
 }
+
+.part_one p {
+  font-size: 32px;
+}
+
+.part_two p {
+  font-size: 30px;
+}
+
+.slidesVertical img {
+  max-width: 650px;
+}
+
+.si {
+  font-weight: bold;
+  font-style: italic;
+}
+
+.part_two .vs6 img {
+  height: 220px;
+}
