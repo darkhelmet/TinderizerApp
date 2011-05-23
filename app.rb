@@ -75,22 +75,6 @@ get '/?' do
   haml(:index)
 end
 
-get '/faq' do
-  'TODO'
-end
-
-get '/firefox' do
-  'TODO'
-end
-
-get '/safari' do
-  'TODO'
-end
-
-get '/chrome' do
-  'TODO'
-end
-
-get '/ie' do
-  'TODO'
+get %r{/(faq|firefox|safari|chrome|ie|bugs)} do |page|
+  haml(page.to_sym)
 end
