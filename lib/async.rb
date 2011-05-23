@@ -45,12 +45,12 @@ class Async
       _, status = Process.waitpid2(pid)
       # Will probably run with warnings, and return 1 instead
       if File.exists?(mobi)
-        User.notify(Redis.new, key, 'Third stage finished.')
+        User.notify(redis, key, 'Third stage finished.')
         message.merge!(mobi: mobi)
         email_queue << message
       else
         error_queue << "kindlegen blew up on #{url}"
-        User.notify(Redis.new, key, 'Third stage failed. Developer notified.')
+        User.notify(redis, key, 'Third stage failed. Developer notified.')
       end
     end
 
