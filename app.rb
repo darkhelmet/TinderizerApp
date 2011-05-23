@@ -53,12 +53,12 @@ end
 get '/ajax/submit.json' do
   redis = settings.redis
   email, url = params.values_at(:email, :url)
-  limit_key = Digest::SHA1.hexdigest([email, url].join(':'))
+  limit_key = Digest::SHA1.hexdigest(email)
   RateLimit.limit(redis, limit_key, 60) do
     key = Digest::SHA1.hexdigest([email, url, Time.now.to_s].join(':'))
     message = { :email => params[:email], :url => params[:url], :key => key }
-    settings.async.extractor << message
     redis.set(key, 'Working...')
+    settings.async.extractor << message
     { :message => 'Submitted! Hang tight...', :id => key }.to_json
   end
 end
