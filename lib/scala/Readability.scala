@@ -57,16 +57,15 @@ class Readability(url : String) {
         content match {
             case None          => (null, null, null)
             case Some(article) => {
+                debug("Got an article")
                 div.appendChild(title)
                 div.appendChild(article)
 
                 postProcessContent(div)
 
-                val imageMap = getImageMap(div, new URL(url))
-
                 // TODO: Handle multiple pages
 
-                (div, title, imageMap)
+                (div, title, getImageMap(div, new URL(url)))
             }
         }
     }
@@ -110,10 +109,11 @@ class Readability(url : String) {
             removeUnlikelyElements(body)
         }
         val nodesToScore = getNodesToScore(body)
-        // TODO: Figure out why this doesn't work exploding the params
+
+        // LINE: 841-853
         val candidates = scoreElements(nodesToScore, shouldScoreClasses).map { pair =>
-            (pair._1, pair._2  * (1 - getLinkDensity(pair._1)))
-            // (elem, score * (1 - getLinkDensity(elem)))
+            val (elem, score) = pair
+            (elem, score  * (1 - getLinkDensity(elem)))
         }
         val (topCandidate, topScore) = candidates.toList.sortBy(_._2).head
 
@@ -128,11 +128,15 @@ class Readability(url : String) {
         prepareArticle(article, candidates, shouldCleanConditionally, shouldScoreClasses)
 
         if (article.text.length < 250) {
+            debug("Short article")
             if (shouldStripUnlikely) {
+                debug("Trying again with shouldStripUnlikely=false")
                 return extractArticle(doc.clone, false)
             } else if (shouldScoreClasses) {
+                debug("Trying again with shouldScoreClasses=false")
                 return extractArticle(doc.clone, false, false)
             }  else if (shouldCleanConditionally) {
+                debug("Trying again with shouldCleanConditionally=false")
                 return extractArticle(doc.clone, false, false, false)
             } else {
                 return None
@@ -142,6 +146,7 @@ class Readability(url : String) {
         Some(article)
     }
 
+    // CORRECT
     private def getLinkDensity(elem : Element) : Double = {
         val textLength = elem.text.length
         val linkLength = elem.getElementsByTag("a").foldLeft(0.0)((total, link) => total + link.text.length)
@@ -183,6 +188,7 @@ class Readability(url : String) {
         // }
     }
 
+    // CORRECT
     private def cleanHeaders(elem : Element, shouldScoreClasses : Boolean) {
         List("h1", "h2").foreach { tag =>
             elem.getElementsByTag(tag).foreach { e =>
@@ -193,6 +199,7 @@ class Readability(url : String) {
         }
     }
 
+    // CORRECT
     private def removeStyleAttributes(elem : Element) {
         elem.getAllElements.foreach(e => e.removeAttr("style"))
     }
@@ -215,6 +222,7 @@ class Readability(url : String) {
         }
     }
 
+    // CORRECT
     private def cleanConditionally(elem : Element, candidates : scala.collection.mutable.Map[Element, Double], tag : String, shouldCleanConditionally : Boolean, shouldScoreClasses : Boolean) {
         if (shouldCleanConditionally) {
             elem.getElementsByTag(tag).foreach { e =>
@@ -260,14 +268,19 @@ class Readability(url : String) {
         }
     }
 
+    // CORRECT
     private def getTagCount(elem : Element, tag : String) : Int = {
         elem.getElementsByTag(tag).length
     }
 
+    // CORRECT
     private def getCharCount(s : String, c : String) : Int = {
         c.split(c).length - 1
     }
 
+    // LINE: 876-957
+    // CORRECT
+    // TODO: Refactor
     private def appendPotentials(article : Element, candidates : scala.collection.mutable.Map[Element, Double], topCandidate : Element, topScore : Double) {
         val siblingThreshold = scala.math.max(10, topScore * 0.2)
         topCandidate.siblingElements.foreach { sibling =>
@@ -277,25 +290,27 @@ class Readability(url : String) {
             }
 
             var bonus = 0.0
-            // Consider using classNames and comparing the list
+            // TODO: Consider using classNames and comparing the Set
             if (topCandidate.className != "" && sibling.className == topCandidate.className) {
                 bonus += topScore * 0.2
             }
 
-            if (candidates.contains(sibling) && candidates.get(sibling).get + bonus >= siblingThreshold) {
+            lazy val overThreshold = candidates.get(sibling).get + bonus >= siblingThreshold
+            if (candidates.contains(sibling) && overThreshold) {
                 append = true
             }
 
             if (sibling.tagName == "p") {
-                if (sibling.text.length > 80 && getLinkDensity(sibling) < 0.25) {
+                val len = sibling.text.length
+                val linkDensity = getLinkDensity(sibling)
+                if (len > 80 && linkDensity < 0.25) {
                     append = true
-                } else if (sibling.text.length < 80 && getLinkDensity(sibling) == 0 && """\.( |$)""".r.findFirstIn(sibling.text) == None) {
+                } else if (len < 80 && linkDensity == 0 && """\.( |$)""".r.findFirstIn(sibling.text) != None) {
                     append = true
                 }
             }
 
             if (append) {
-
                 if (sibling.tagName != "p" && sibling.tagName != "div") {
                     sibling.tagName("div")
                 }
@@ -305,10 +320,13 @@ class Readability(url : String) {
         }
     }
 
+    // 792-834
+    // CORRECT
     private def scoreElements(elems : List[Element], shouldScoreClasses : Boolean) : scala.collection.mutable.Map[Element, Double] = {
         val scores = new scala.collection.mutable.HashMap[Element, Double]
         elems.withFilter { elem =>
-            elem.parent != null && elem.text.length < 25
+            // Only consider nodes with a parent and
+            elem.parent != null && elem.text.length >= 25
         }.foreach { elem =>
             val text = elem.text
             val parent = elem.parent
@@ -316,15 +334,15 @@ class Readability(url : String) {
 
             val parentScore = initialScore(parent, shouldScoreClasses)
             val grandParentScore = initialScore(grandParent, shouldScoreClasses)
-            val score = 1 + elem.text.split(',').length + List(3, scala.math.floor(text.length.toFloat / 100)).min
+            val score = 1 + getCharCount(text, ",") + List(3, scala.math.floor(text.length.toFloat / 100)).min
 
             scores.put(parent, parentScore + score)
             scores.put(grandParent, grandParentScore + (score.toFloat / 2))
         }
-
         scores
     }
 
+    // LINE: 665-702
     // CORRECT
     private def initialScore(elem : Element, shouldScoreClasses : Boolean) : Double = {
         val initial = scoreClasses(elem, shouldScoreClasses)
@@ -338,11 +356,11 @@ class Readability(url : String) {
         extra + initial
     }
 
+    // LINE: 1513-1541
     // CORRECT
+    // TODO: Refactor
     private def scoreClasses(elem : Element, shouldScoreClasses : Boolean) : Double = {
         var weight = 0.0
-
-        // TODO: Refactor
         if (shouldScoreClasses) {
             if (Readability.regexes("negative").findFirstIn(elem.className) != None) {
                 weight -= 25
@@ -363,6 +381,8 @@ class Readability(url : String) {
         weight
     }
 
+    // LINE: 732-747
+    // CORRECT
     private def removeUnlikelyElements(body : Element) {
         body.getAllElements.foreach { elem =>
             val matchString = elem.className + elem.id
@@ -375,17 +395,19 @@ class Readability(url : String) {
         }
     }
 
+    // LINE: 749-782
+    // CORRECT
     private def getNodesToScore(body : Element) : List[Element] = {
         def filter(elem : Element) : Boolean = {
             if (Readability.regexes("scoreable").findFirstIn(elem.tagName) != None) {
+                debug("Scoring based on scoreable regex")
                 return true
             }
 
-            if (elem.tagName == "div") {
-                if (hasNoBlockLevelChildren(elem)) {
-                    elem.tagName("p")
-                    return true
-                }
+            if (elem.tagName == "div" && hasNoBlockLevelChildren(elem)) {
+                debug("Scoring based on div + no block level children")
+                elem.tagName("p")
+                return true
             }
 
             false
@@ -394,25 +416,42 @@ class Readability(url : String) {
         body.getAllElements.toList.filter(filter(_))
     }
 
+    // LINE: 755
+    // CORRECT as far as the original is concerned, but some things they check for
+    // aren't block level elements, and they don't check for all block level elements.
+    // TODO: Should probably refactor to use isBlock()
     private def hasNoBlockLevelChildren(elem : Element) : Boolean = {
-        // TODO: Refactor to use isBlock()
-        elem.getAllElements.find(e => "(?i)a|blockquote|dl|div|img|ol|p|pre|table|ul".r.findFirstIn(e.tagName) == None) == None
+        // elem.getAllElements.find(e => "(?i)a|blockquote|dl|div|img|ol|p|pre|table|ul".r.findFirstIn(e.tagName) == None) == None
+        // elem.getAllElements.find(e => e.isBlock) == None
+        !elem.getAllElements.exists(_.isBlock)
     }
 
+    // CORRECT
     private def extractTitle() : Element = {
         val titleElement = Readability.createElement("h1")
         extractInitialTitle match {
-            case Some(title) => titleElement.html(processTitle(title))
-            case _           => titleElement
+            case Some(title) => {
+                val processed = processTitle(title).trim
+                debug("Using title: " + processed)
+                titleElement.html(processed)
+            }
+            case _           => {
+                debug("No title found")
+                titleElement
+            }
         }
     }
 
+    // TODO: Refactor, maybe? Wording changes?
+    // CORRECT
     private def processTitle(title : String) : String = {
         // Fallback to first <h1> tag if there is only 1 <h1> tag
         """ [\|\-] """.r.findFirstIn(title) match {
             case Some(m) => {
+                debug("Found match in processTitle")
                 val processed = """(.*)[\|\-] .*""".r.replaceAllIn(title, "$1")
                 if (processed.split(' ').length < 3) {
+                    debug("Short title in processTitle, processing again")
                     """[^\|\-]*[\|\-](.*)""".r.replaceAllIn(title, "$1")
                 } else {
                     processed
@@ -422,10 +461,14 @@ class Readability(url : String) {
         }
     }
 
+    // TODO: Refactor maybe? Wording chnages?
+    // CORRECT
     private def checkIndexOfColon(title : String) : String = {
         if (title.indexOf(": ") >= 0) {
-            val processed = """.*: (.*)""".r.replaceAllIn(title, "$1")
+            debug("Found match in checkIndexOfColon")
+            val processed = """.*:(.*)""".r.replaceAllIn(title, "$1")
             if (processed.split(' ').length < 3) {
+                debug("Short title in checkIndexOfColon, processing again")
                 """[^:]*[:](.*)""".r.replaceAllIn(title, "$1")
             } else {
                 processed
@@ -435,8 +478,11 @@ class Readability(url : String) {
         }
     }
 
+    // CORRECT
     private def checkTitleLength(title : String) : String = {
-        if (title.length > 150 || title.length < 15) {
+        val len = title.length
+        if (len > 150 || len < 15) {
+            debug("Title length off; using h1 tag")
             val headers = doc.getElementsByTag("h1")
             if (headers.length == 1) {
                 return headers.head.text
@@ -448,6 +494,7 @@ class Readability(url : String) {
 
     // TODO: Possibly pull from https://github.com/peterc/pismo/blob/master/lib/pismo/internal_attributes.rb
     // Get the initial guess for a title
+    // CORRECT
     private def extractInitialTitle() : Option[String] = {
         titleId.orElse(titleElement) match {
             case Some(elem) => Option(elem.text)
@@ -456,13 +503,15 @@ class Readability(url : String) {
     }
 
     // Grab an Option[Element] of the element with id=title
+    // CORRECT
     private def titleElement() : Option[Element] = {
-        Option(doc.getElementById("title"))
+        doc.getElementsByTag("title").headOption
     }
 
     // Grab an Option[Element] of the title element
+    // CORRECT
     private def titleId() : Option[Element] = {
-        doc.getElementsByTag("title").headOption
+        Option(doc.getElementById("title"))
     }
 
     // Remove any/all tags specified
@@ -482,5 +531,9 @@ class Readability(url : String) {
     // Nicely iterate over tags
     private def withEachTag(tags : String*)(func : Element => Unit) {
         tags.foreach { tag => doc.getElementsByTag(tag).foreach(func) }
+    }
+
+    private def debug(message : String) {
+        println("*** Readability DEBUG ***: " + message)
     }
 }

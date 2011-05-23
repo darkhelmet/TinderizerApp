@@ -9,8 +9,8 @@ require 'mail'
 require 'json'
 require 'user'
 require 'image_monster'
-
-java_import com.darkhax.Readability
+require 'goose_extractor'
+require 'readability_extractor'
 
 class Async
   Config = JSON.parse(File.read('config/config.json'))
@@ -75,22 +75,16 @@ class Async
 
     @extractor = SafeQueue.build(:extractor) do |message|
       email, url, key = message.values_at(:email, :url, :key)
-      readability = Readability.new(url)
-      tuple = readability.summary
-      element, title, image_map = tuple._1, tuple._2, tuple._3
-      if element.nil?
-        User.notify(redis, key, 'Failed extracting this page. Developer notified.')
-        error_queue << "Failed extracting URL: #{url}"
-      else
-        working = File.join(tmp, key)
-        Dir.mkdir(working)
-        out = File.join(working, "#{key}.html")
-        File.open(out, 'w') { |f| f.write(element.to_s) }
-        ImageMonster.eat(image_map, working)
-        User.notify(redis, key, 'First stage finished.')
-        message.merge!(html: out, title: title, working: working)
-        pandoc_queue << message
-      end
+      working = File.join(tmp, key)
+      Dir.mkdir(working)
+      ex = ReadabilityExtractor.new(url, working)
+      outfile, title, image_map = ex.extract!
+      # User.notify(redis, key, 'Failed extracting this page. Developer notified.')
+      # error_queue << "Failed extracting URL: #{url}"
+      ImageMonster.eat(image_map, working)
+      User.notify(redis, key, 'First stage finished.')
+      message.merge!(html: outfile, title: title, working: working)
+      pandoc_queue << message
     end
   end
 end
