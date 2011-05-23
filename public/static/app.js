@@ -18,9 +18,9 @@ $(document).ready(function() {
           body.removeChild(div); \
         } \
         div = document.createElement('div'); \
-        div.id = id; div.style.width = '200px'; div.style.height = '30px'; \
+        div.id = id; div.style.width = '300px'; div.style.height = '30px'; \
+        div.style.fontSize = '12px'; div.setAttribute('data-host', '" + host + "'); \
         div.setAttribute('data-email', '" + encodeURIComponent(this.value) + "'); \
-        div.setAttribute('data-host', '" + host + "'); \
         div.style.position = 'fixed'; div.style.top = '10px'; div.style.left = '10px'; \
         div.style.background = 'white'; div.style.color = 'black'; div.style.borderColor = 'black'; div.style.borderStyle = 'solid'; \
         div.style.borderWidth = '2px'; div.style.zIndex = '99999999'; div.style.padding = '5px'; \

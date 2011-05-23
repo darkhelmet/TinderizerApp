@@ -18,6 +18,7 @@ require 'redis'
 require 'digest/sha1'
 require 'lib/sinatra/render'
 require 'async'
+require 'rate_limit'
 
 # jruby fails me: http://jira.codehaus.org/browse/JRUBY-5529
 require 'net/http' # Just to ensure that's loaded
@@ -31,6 +32,7 @@ end
 
 configure do
   disable(:lock)
+  set(:redis, Redis.new)
   set(:async, Async.new)
   # Always reload bookmarklet in development mode
   set(:bookmarklet, -> { File.read('public/bookmarklet.js') })
@@ -49,20 +51,21 @@ before do
 end
 
 get '/ajax/submit.json' do
-  redis = Redis.new
-  # TODO: Rate limiting
+  redis = settings.redis
   email, url = params.values_at(:email, :url)
-  key = Digest::SHA1.hexdigest([email, url, Time.now.to_s].join(':'))
-  message = { :email => params[:email], :url => params[:url], :key => key }
-  settings.async.extractor << message
-  redis.set(key, 'Working...')
-  { :message => 'Submitted! Hang tight...', :id => key }.to_json
+  limit_key = Digest::SHA1.hexdigest([email, url].join(':'))
+  RateLimit.limit(redis, limit_key, 60) do
+    key = Digest::SHA1.hexdigest([email, url, Time.now.to_s].join(':'))
+    message = { :email => params[:email], :url => params[:url], :key => key }
+    settings.async.extractor << message
+    redis.set(key, 'Working...')
+    { :message => 'Submitted! Hang tight...', :id => key }.to_json
+  end
 end
 
 get '/ajax/status/:id.json' do |id|
-  redis = Redis.new
-  status = redis.get(id)
-  done = !status.match(/done|failed/i).nil?
+  status = settings.redis.get(id)
+  done = !status.match(/done|failed|limited/i).nil?
   { message: status, done: done }.to_json
 end
 

@@ -19,6 +19,7 @@ class Async
   # TODO: Cleanup
   def initialize
     tmp = Dir.tmpdir
+    redis = Redis.new
 
     error_queue = @error = GirlFriday::WorkQueue.new(:error) do |message|
       Loggly.error(message)
@@ -34,11 +35,10 @@ class Async
       m.body "Straight to your Kindle! #{title}: #{url}"
       m.postmark_attachments = [File.open(mobi)]
       m.deliver!
-      User.notify(Redis.new, key, 'All done!')
+      User.notify(redis, key, 'All done! Grab your Kindle and hang tight!')
     end
 
     kindlegen_queue = SafeQueue.build(:kindlegen) do |message|
-      redis = Redis.new
       email, url, key, html, title, epub = message.values_at(:email, :url, :key, :html, :title, :epub)
       mobi = File.join(File.dirname(html), "#{key}.mobi")
       pid = Spoon.spawnp('kindlegen', epub)
@@ -65,12 +65,12 @@ class Async
       pid = Spoon.spawnp('pandoc', '--epub-metadata', xml, '-o', epub, html)
       _, status = Process.waitpid2(pid)
       if status.success?
-        User.notify(Redis.new, key, 'Second stage finished.')
+        User.notify(redis, key, 'Second stage finished.')
         message.merge!(epub: epub)
         kindlegen_queue << message
       else
         error_queue << "pandoc blew up on #{url}"
-        User.notify(Redis.new, key, 'Second stage failed. Developer notified.')
+        User.notify(redis, key, 'Second stage failed. Developer notified.')
       end
     end
 
@@ -80,14 +80,14 @@ class Async
       tuple = readability.summary
       element, title = tuple._1, tuple._2
       if element.nil?
-        User.notify(Redis.new, key, 'Failed extracting this page. Developer notified.')
+        User.notify(redis, key, 'Failed extracting this page. Developer notified.')
         error_queue << "Failed extracting URL: #{url}"
       else
         out = File.join(tmp, "#{key}.html")
         File.open(out, 'w') do |f|
           f.write(element.to_s)
         end
-        User.notify(Redis.new, key, 'First stage finished.')
+        User.notify(redis, key, 'First stage finished.')
         message.merge!(html: out, title: title)
         pandoc_queue << message
       end

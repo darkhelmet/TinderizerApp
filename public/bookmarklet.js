@@ -272,6 +272,12 @@
       type: 'json',
       success: function(submit) {
         notify(submit.message);
+        if (submit.limited) {
+          setTimeout(function() {
+            body.removeChild(div);
+          }, 2500);
+          return;
+        }
         var id = submit.id;
         var timer = setInterval(function() {
           reqwest({
