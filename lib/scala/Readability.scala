@@ -496,7 +496,7 @@ class Readability(url : String) {
     // Get the initial guess for a title
     // CORRECT
     private def extractInitialTitle() : Option[String] = {
-        titleId.orElse(titleElement) match {
+        titleElement match {
             case Some(elem) => Option(elem.text)
             case _          => None
         }
@@ -506,12 +506,6 @@ class Readability(url : String) {
     // CORRECT
     private def titleElement() : Option[Element] = {
         doc.getElementsByTag("title").headOption
-    }
-
-    // Grab an Option[Element] of the title element
-    // CORRECT
-    private def titleId() : Option[Element] = {
-        Option(doc.getElementById("title"))
     }
 
     // Remove any/all tags specified

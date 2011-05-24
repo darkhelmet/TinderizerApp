@@ -77,7 +77,8 @@ class Async
       email, url, key = message.values_at(:email, :url, :key)
       working = File.join(tmp, key)
       Dir.mkdir(working)
-      ex = ReadabilityExtractor.new(url, working)
+      # ex = ReadabilityExtractor.new(url, working)
+      ex = GooseExtractor.new(url, working)
       outfile, title, image_map = ex.extract!
       # User.notify(redis, key, 'Failed extracting this page. Developer notified.')
       # error_queue << "Failed extracting URL: #{url}"
