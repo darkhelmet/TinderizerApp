@@ -9,7 +9,7 @@ gem 'postmark', '~> 0.9.6' # Sending email
 gem 'mail', '~> 2.3.0' # Sending email
 gem 'rest-client', '~> 1.6.1' # HTTP stuff
 gem 'rake', '~> 0.8.7', :require => nil # Explicitly have this, because we are going to rake things
-gem 'trinidad', '~> 1.1.1', :require => nil # Webserver
+gem 'trinidad', '~> 1.2.0', :require => nil # Webserver
 gem 'RedCloth', '~> 4.2.7' # Textile
 gem 'json', '~> 1.5.1' # JSON
 gem 'hoptoad_notifier', '~> 2.4.9' # Errors

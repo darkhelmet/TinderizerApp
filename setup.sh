@@ -30,10 +30,12 @@ popd
 cabal update
 sudo cabal install pandoc
 
+redis_version=2.2.107-scripting
+
 # Install redis
-wget http://redis.googlecode.com/files/redis-2.2.107-scripting.tar.gz
-tar zxf redis-2.2.107-scripting.tar.gz
-pushd redis-2.2.107-scripting
+wget http://redis.googlecode.com/files/redis-$redis_version.tar.gz
+tar zxf redis-$redis_version.tar.gz
+pushd redis-$redis_version
 make && sudo make install
 popd
 
@@ -73,7 +75,7 @@ sudo aptitude update
 echo 'sun-java6-bin shared/accepted-sun-dlj-v1-1 boolean true' | sudo debconf-set-selections
 sudo aptitude install sun-java6-jdk
 
-jruby_version=1.6.1
+jruby_version=1.6.2
 
 # Install jruby
 wget http://jruby.org.s3.amazonaws.com/downloads/1.6.1/jruby-bin-$jruby_version.tar.gz

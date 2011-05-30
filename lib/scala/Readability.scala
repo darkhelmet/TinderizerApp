@@ -37,6 +37,8 @@ object Readability {
     def createElement(tag : String) = {
         Jsoup.parseBodyFragment("<" + tag + "/>").getElementsByTag(tag).head
     }
+
+    def apply(url : String) = (new Readability(url)).summary
 }
 
 class Readability(url : String) {
@@ -419,10 +421,8 @@ class Readability(url : String) {
     // LINE: 755
     // CORRECT as far as the original is concerned, but some things they check for
     // aren't block level elements, and they don't check for all block level elements.
-    // TODO: Should probably refactor to use isBlock()
     private def hasNoBlockLevelChildren(elem : Element) : Boolean = {
-        // elem.getAllElements.find(e => "(?i)a|blockquote|dl|div|img|ol|p|pre|table|ul".r.findFirstIn(e.tagName) == None) == None
-        // elem.getAllElements.find(e => e.isBlock) == None
+        // !elem.getAllElements.exists(e => "(?i)a|blockquote|dl|div|img|ol|p|pre|table|ul".r.findFirstIn(e.tagName) != None)
         !elem.getAllElements.exists(_.isBlock)
     }
 
