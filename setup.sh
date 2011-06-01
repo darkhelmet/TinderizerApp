@@ -78,7 +78,7 @@ sudo aptitude install sun-java6-jdk
 jruby_version=1.6.2
 
 # Install jruby
-wget http://jruby.org.s3.amazonaws.com/downloads/1.6.1/jruby-bin-$jruby_version.tar.gz
+wget http://jruby.org.s3.amazonaws.com/downloads/$jruby_version/jruby-bin-$jruby_version.tar.gz
 tar zxf jruby-bin-$jruby_version.tar.gz
 sudo mv jruby-$jruby_version /opt/jruby
 
