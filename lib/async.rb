@@ -14,7 +14,6 @@ class Async
   # TODO: Cleanup
   def initialize
     tmp = Dir.tmpdir
-    redis = Redis.new
 
     # Cleanup files after they are no longer needed
     cleanup_queue = GirlFriday::WorkQueue.new(:cleanup) do |directory|
@@ -30,6 +29,7 @@ class Async
 
     # Send emails
     email_queue = SafeQueue.build(:email) do |message|
+      redis = Redis.new
       key, email, url, title, mobi = message.values_at(:key, :email, :url, :title, :mobi)
       User.mail(email, title, url, mobi)
       User.notify(redis, key, 'All done! Grab your Kindle and hang tight!')
@@ -37,6 +37,7 @@ class Async
 
     # Run kindlegen
     kindlegen_queue = SafeQueue.build(:kindlegen) do |message|
+      redis = Redis.new
       key, html, title, working, epub, url = message.values_at(:key, :html, :title, :working, :epub, :url)
       mobi = File.join(working, 'out.mobi')
       pid = Spoon.spawnp('kindlegen', epub)
@@ -62,6 +63,7 @@ class Async
 
     # Run pandoc
     pandoc_queue = SafeQueue.build(:pandoc) do |message|
+      redis = Redis.new
       key, html, title, author, working, url = message.values_at(:key, :html, :title, :author, :working, :url)
       xml = write_epub_xml.call(working, title, author)
       epub = File.join(working, 'out.epub')
@@ -79,6 +81,7 @@ class Async
 
     # Run extraction
     @extractor = SafeQueue.build(:extractor) do |message|
+      redis = Redis.new
       key, url = message.values_at(:key, :url)
       working = File.join(tmp, key)
       ex = Extractor::ReadabilityApi.new(url, working)
