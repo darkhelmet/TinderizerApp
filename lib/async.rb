@@ -30,14 +30,14 @@ class Async
 
     # Send emails
     email_queue = SafeQueue.build(:email) do |message|
-      email, url, key, title, mobi = message.values_at(:email, :url, :key, :title, :mobi)
+      key, email, url, title, mobi = message.values_at(:key, :email, :url, :title, :mobi)
       User.mail(email, title, url, mobi)
       User.notify(redis, key, 'All done! Grab your Kindle and hang tight!')
     end
 
     # Run kindlegen
     kindlegen_queue = SafeQueue.build(:kindlegen) do |message|
-      email, url, key, html, title, working, epub = message.values_at(:email, :url, :key, :html, :title, :working, :epub)
+      key, html, title, working, epub = message.values_at(:key, :html, :title, :working, :epub)
       mobi = File.join(working, 'out.mobi')
       pid = Spoon.spawnp('kindlegen', epub)
       _, status = Process.waitpid2(pid)
@@ -55,14 +55,14 @@ class Async
     write_epub_xml = proc do |working, title, author|
       xml = File.join(working, 'out.xml')
       File.open(xml, 'w') do |f|
-        f.write("<dc:title>#{title}</dc:title>\n<dc:author>#{author}</dc:author>")
+        f.write("<dc:title>#{title}</dc:title>\n<dc:creator>#{author}</dc:creator>\n")
       end
       xml
     end
 
     # Run pandoc
     pandoc_queue = SafeQueue.build(:pandoc) do |message|
-      email, url, key, html, title, author, working = message.values_at(:email, :url, :key, :html, :title, :author, :working)
+      key, html, title, author, working = message.values_at(:key, :html, :title, :author, :working)
       xml = write_epub_xml.call(working, title, author)
       epub = File.join(working, 'out.epub')
       pid = Spoon.spawnp('pandoc', '--epub-metadata', xml, '-o', epub, html)
@@ -79,7 +79,7 @@ class Async
 
     # Run extraction
     @extractor = SafeQueue.build(:extractor) do |message|
-      email, url, key = message.values_at(:email, :url, :key)
+      key, url = message.values_at(:key, :url)
       working = File.join(tmp, key)
       ex = Extractor::ReadabilityApi.new(url, working)
       begin
@@ -87,7 +87,7 @@ class Async
         User.notify(redis, key, 'First stage finished...')
         message.merge!(html: outfile, title: title, author: author, working: working)
         pandoc_queue << message
-      rescue Extractor::ExtractionFailedException => boom
+      rescue Exception => boom
         HoptoadNotifier.notify_or_ignore(boom)
         error_queue << { error: "Failed extracting URL: #{url}", working: working }
         User.notify(redis, key, 'Failed extracting this page. Developer notified.')
