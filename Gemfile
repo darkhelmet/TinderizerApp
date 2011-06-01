@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'sinatra', '~> 1.2.6' # Framework
+gem 'rack', '1.2.3'
 gem 'haml', '~> 3.1.1' # Templating
 gem 'girl_friday', '~> 0.9.1' # Async processing
 gem 'yuicompressor', '~> 1.2.0' # Compressing JS/CSS inside jruby itself
