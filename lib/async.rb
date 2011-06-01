@@ -37,7 +37,7 @@ class Async
 
     # Run kindlegen
     kindlegen_queue = SafeQueue.build(:kindlegen) do |message|
-      key, html, title, working, epub = message.values_at(:key, :html, :title, :working, :epub)
+      key, html, title, working, epub, url = message.values_at(:key, :html, :title, :working, :epub, :url)
       mobi = File.join(working, 'out.mobi')
       pid = Spoon.spawnp('kindlegen', epub)
       _, status = Process.waitpid2(pid)
@@ -62,7 +62,7 @@ class Async
 
     # Run pandoc
     pandoc_queue = SafeQueue.build(:pandoc) do |message|
-      key, html, title, author, working = message.values_at(:key, :html, :title, :author, :working)
+      key, html, title, author, working, url = message.values_at(:key, :html, :title, :author, :working, :url)
       xml = write_epub_xml.call(working, title, author)
       epub = File.join(working, 'out.epub')
       pid = Spoon.spawnp('pandoc', '--epub-metadata', xml, '-o', epub, html)
