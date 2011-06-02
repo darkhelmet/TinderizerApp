@@ -1,4 +1,4 @@
-%w(bundler/setup sinatra newrelic_rpm json active_support).each { |lib| require lib }
+%w(newrelic_rpm json active_support).each { |lib| require lib }
 ActiveSupport::JSON.backend = :JSONGem
 require 'hoptoad_notifier'
 

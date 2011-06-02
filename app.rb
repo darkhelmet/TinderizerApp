@@ -1,4 +1,6 @@
 $: << File.expand_path(File.join('.', 'lib'))
+require 'bundler/setup'
+require 'sinatra'
 require 'setup'
 require 'environment'
 
