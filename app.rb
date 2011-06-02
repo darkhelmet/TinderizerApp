@@ -1,33 +1,6 @@
 $: << File.expand_path(File.join('.', 'lib'))
-
-%w(bundler/setup sinatra newrelic_rpm json active_support).each { |lib| require lib }
-ActiveSupport::JSON.backend = :JSONGem
-require 'hoptoad_notifier'
-
-HoptoadNotifier.configure do |config|
-  config.api_key = JSON.parse(File.read('config/config.json'))['hoptoad']
-end
-
-%w(haml yuicompressor redis digest/sha1 lib/sinatra/render async user jruby_ssl_fix).each { |lib| require lib }
-
-configure do
-  disable(:lock)
-  # Always reload bookmarklet in development mode
-  set({
-    redis: Redis.new,
-    async: Async.new,
-    bookmarklet: -> { File.read('public/bookmarklet.js') }
-  })
-end
-
-configure :production do
-  use(HoptoadNotifier::Rack)
-  # But in production, compress and cache it
-  set({
-    haml: { ugly: true },
-    bookmarklet: YUICompressor.compress_js(settings.bookmarklet, munge: true)
-  })
-end
+require 'setup'
+require 'environment'
 
 before do
   # This needs to be set to allow the JSON to be had over XMLHttpRequest
