@@ -10,6 +10,7 @@ before do
 end
 
 get '/ajax/submit.json' do
+  content_type(:json)
   redis = settings.redis
   email, url = params.values_at(:email, :url)
   User.limit(redis, email, 60) do
@@ -22,6 +23,7 @@ get '/ajax/submit.json' do
 end
 
 get '/ajax/status/:id.json' do |id|
+  content_type(:json)
   status = settings.redis.get(id)
   done = !status.match(/done|failed|limited/i).nil?
   { message: status, done: done }.to_json
