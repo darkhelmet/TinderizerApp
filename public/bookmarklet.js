@@ -264,6 +264,10 @@
     div.appendChild(document.createTextNode(' '));
   };
 
+  div.style.width = '300px';
+  div.style.height = '30px';
+  div.style.fontSize = '12px';
+
   // TODO: Some sort of detection of a failure
   var kindlebility = function() {
     var params = "?url=" + encodeURIComponent(url) + "&email=" + encodeURIComponent(to);
