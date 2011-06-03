@@ -30,26 +30,14 @@ body {
   text-align: center;
 }
 
-#extra, #ios {
-  display: none;
-}
-
 #extra small {
   display: block;
 }
 
-#iosLink {
-  font-size: 50%;
-}
-
-#ios textarea {
+#ios {
   font-size: 12px;
   height: 100px;
   width: 400px;
-}
-
-#ios .description {
-  font-size: 18px;
 }
 
 .round {
@@ -83,8 +71,8 @@ dl.slidedeck {
   width: 800px;
 }
 
-#form > * {
-  font-size: 400%;
+input {
+  font-size: 200%;
 }
 
 #extra * {
@@ -92,7 +80,7 @@ dl.slidedeck {
 }
 
 #bookmarklet {
-  font-size: 400%;
+  font-size: 200%;
 }
 
 .part_one p {

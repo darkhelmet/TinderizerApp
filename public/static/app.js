@@ -1,14 +1,6 @@
 $(document).ready(function() {
   var host = $('meta[name=host]').attr('content');
   $('#email').change(function() {
-    if ('' == this.value) {
-      $('#extra').slideUp();
-    } else {
-      $('#extra').slideDown();
-    }
-    $('html, body').animate({
-      scrollTop: $(document).height()
-    });
     var script = "javascript:(function() { \
       var setupDiv = function() { \
         var id = 'kindlebility'; \
@@ -34,16 +26,29 @@ $(document).ready(function() {
       script.src = 'http://" + host + "/static/bookmarklet.js?t=' + (new Date()).getTime(); \
       document.getElementsByTagName('head')[0].appendChild(script); \
     })();";
-    $('#bookmarklet').html('Send to my Kindle!').attr('href', script);
-    $('#ios textarea').html(script);
-  });
-
-  $('#iosLink').click(function(event) {
-    $('#ios').slideToggle();
-    return false;
+    $('#bookmarklet').attr('href', script);
   });
 
   $.get('/static/donate.html', function(data) {
     $('.center:last').append(data);
+  });
+
+  $(document).bind('reveal.facebox', function() {
+    $('#ios').html($('#bookmarklet').attr('href'));
+  });
+
+  $.facebox.settings.closeImage = '/static/closelabel.png';
+  $.facebox.settings.loadingImage = '/static/loading.gif';
+
+  $('.facebox').facebox();
+
+  $('.slidedeck').slidedeck().vertical();
+  $('a.vsnext').click(function() {
+    $('.slidedeck').slidedeck().vertical().next();
+    return false;
+  });
+  $('a.hsnext').click(function() {
+    $('.slidedeck').slidedeck().next();
+    return false;
   });
 });

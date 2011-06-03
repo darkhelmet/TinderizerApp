@@ -38,6 +38,14 @@ get '/?' do
   haml(:index)
 end
 
-get %r{/(faq|firefox|safari|chrome|ie|bugs)} do |page|
+get '/kindle-email' do
+  haml(:kindle_email, :layout => false)
+end
+
+get %r{/(firefox|safari|chrome|ie|ios)} do |page|
+  haml(page.to_sym, :layout => false)
+end
+
+get %r{/(faq|bugs)} do |page|
   haml(page.to_sym)
 end

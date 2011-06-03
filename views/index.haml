@@ -16,11 +16,11 @@
               The
               %a{ :href => 'http://kindle.com/' } Amazon Kindle
               is great.
-            %p If all you read is books.
-            %p But you don't, do you?
-            %p You're on the web right now,
-            %p and that means you probably read stuff on the web.
-            %a.vsnext{ :href => '#' } Keep Reading...
+            %p If all you read is books. But you don't.
+            %p You're on the web,
+            %p and you read stuff on the web.
+            %p
+              %a.vsnext{ :href => '#' } Keep Reading...
           %li.vs2
             %p
               And
@@ -40,66 +40,78 @@
               There's
               %span.si no signup,
               I don't keep
-              %span.si any information,
+              %span.si any information!
             %p
-              and if you want, you can even
-              %a{ :href => 'https://github.com/darkhelmet/kindlebility3', :target => '_blank' } view the code!
-            %a.hsnext{ :href => '#' } Set up Kindlebility!
+              %a.hsnext{ :href => '#' } Set up Kindlebility!
+            %a{ :href => 'https://github.com/darkhelmet/kindlebility3', :target => '_blank' } You can even view the code!
       / Part 2: The solution
       %dt The Solution
       %dd
         %ul.slidesVertical.part_two
           %li.vs1
-            %p Kindlebility uses a bookmarklet to do the work
-            %p It's like a bookmark, but runs Javascript,
-            %p instead of going to a URL.
-            %p First you need to make the bookmarklet,
-            %p then you must allow me to send you things.
             %p
-              That's it!
+              Kindlebility uses a
+              %a{ :href => 'http://en.wikipedia.org/wiki/Bookmarklet', :target => '_blank' } bookmarklet
+              to do the work
+            %p First you need to make the bookmarklet,
+            %p then you have to let me to send you things.
+            %p That's it!
+            %p
               %a.vsnext{ :href => '#' } Make the bookmarklet
           %li.vs2
             %p
               Enter your
-              %em Kindle Email
+              %em
+                %a.facebox{ :href => '/kindle-email' } Kindle Email
               in the big box below.
             %p
-              Get it from
-              %a{ :href => 'http://kindle.com/', :target => '_blank' } Kindle.com
-              under
-              %em Manage Your Kindle
-            %img{ :src => 'http://img.skitch.com/20110523-c4uhmkajachphpn849un9j1k5h.jpg' }
-            %p
-              Press
-              %em Enter
-              or click outside the box.
+              %input#email.round{ :type => 'text', :placeholder => 'johndoe@kindle.com' }
             %p
               %a.vsnext{ :href => '#' } What's next?
+            %span
+              You can use either an
+              %em @kindle.com
+              or
+              %em @free.kindle.com
+              address,
+            %br
+            %span
+              though the former might use 3G and
+              %a{ :href => 'http://www.amazon.com/gp/help/customer/display.html?nodeId=200505520&#fees', :target => '_blank' } cost you money. Read more at Amazon.com.
           %li.vs3
-            %p Drag the bookmarklet to your bookmarks bar.
-            %img{ :src => 'http://img.skitch.com/20110523-jru4y8nyd7c4dcwif37x44fejq.jpg' }
-            %p For help with your specific browser:
             %p
-              %a{ :href => '/chrome', :target => '_blank' } Google Chrome
-              &middot;
-              %a{ :href => '/firefox', :target => '_blank' } Firefox
-              &middot;
-              %a{ :href => '/safari', :target => '_blank' } Safari
-              &middot;
-              %a{ :href => '/ie', :target => '_blank' } Internet Explorer
+              Drag the bookmarklet to your
+              %a.facebox{ :href => 'http://img.skitch.com/20110523-jru4y8nyd7c4dcwif37x44fejq.medium.jpg' } bookmarks bar.
+            %p
+              %a#bookmarklet{ :href => '#' } Send to my Kindle!
             %p
               %a.vsnext{ :href => '#' } All done!
+            %span Need specifics?
+            %br
+            %br
+            %a.facebox{ :href => '/chrome' } Google Chrome
+            &middot;
+            %a.facebox{ :href => '/safari' } Safari
+            &middot;
+            %a.facebox{ :href => '/firefox' } Firefox
+            %br
+            %br
+            %a.facebox{ :href => '/ie' } Internet Explorer
+            &middot;
+            %a.facebox{ :href => '/ios' } iPad/iPhone
           %li.vs4
             %p
-              Add
-              %span.si kindle@darkhelmetlive.com
-              to your
+              Head to
+              %a{ :href => 'https://www.amazon.com/gp/digital/fiona/manage', :target => '_blank' } Kindle.com
+              and add
             %p
-              %span.si Kindle Approved Email List
-            %img{ :src => 'http://img.skitch.com/20110523-jykm4xnmsg783thqmd6qtmdcab.jpg' }
-            %br
-            %br
-            %a.vsnext{ :href => '#' } Now what?
+              %span.si kindle@darkhelmetlive.com
+            %p
+              to your
+              %span.si
+                %a.facebox{ :href => 'http://img.skitch.com/20110523-jykm4xnmsg783thqmd6qtmdcab.jpg' } Kindle Approved Email List
+            %p
+              %a.vsnext{ :href => '#' } Now what?
           %li.vs5
             %p Now browse to an interesting article,
             %p
@@ -109,41 +121,12 @@
             %p
               %a.vsnext{ :href => '#' } Anything else?
           %li.vs6
-            %p Turn your Kindle on; it should download to it soon.
+            %p Turn your Kindle on!
+            %p Your freshly pressed article should arrive soon.
+            %p You can check the status of it on the
             %p
-              Check the status on the
-              %em Manage Your Kindle
-              page:
-            %img{ :src => 'http://img.skitch.com/20110523-nwbkgekhnju9j7g93hbjhgbrxs.jpg' }
-  %small#blog
-    Want more than some silly slideshow and a textbox asking for an email?
-    %a{ :href => 'http://blog.darkhax.com/2011/01/20/the-what-why-and-how-of-kindlebility' } Read This!
-  #form
-    %label.text_shadow{ :for => 'email' } Your Kindle Email:
-    %input#email.round{ :type => 'text', :placeholder => 'johndoe@kindle.com' }
-  #extra
-    %br
-    %p Drag the link below to your bookmarks bar, and add
-    %p
-      %strong kindle@darkhelmetlive.com
-    %p to your Kindle Approved E-mail List
-    %br
-    %a#bookmarklet{ :href => '#' }
-    %br
-    %br
-    %a#iosLink{ :href => '#' } On an iPad or other iOS device?
-    %br
-    #ios
-      %p.description Bookmark this page, and replace the URL of the bookmark you just made with this Javascript code:
-      %textarea
+              %em
+                %a.facebox{ :href => 'http://img.skitch.com/20110523-nwbkgekhnju9j7g93hbjhgbrxs.jpg' } Manage Your Kindle
+              page.
+            %p Happy reading!
   %br
-  :javascript
-    $('.slidedeck').slidedeck().vertical();
-    $('a.vsnext').click(function() {
-      $('.slidedeck').slidedeck().vertical().next();
-      return false;
-    });
-    $('a.hsnext').click(function() {
-      $('.slidedeck').slidedeck().next();
-      return false;
-    });
