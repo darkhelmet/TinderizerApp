@@ -40,7 +40,7 @@ module Extractor
       doc = Jsoup.parse(html)
       image_map = doc.get_elements_by_tag('img').inject({}) do |map, img|
         url = img.attr('src')
-        rewritten = [Digest::SHA1.hexdigest(url), URI(url).path.split('.').last].join('.')
+        rewritten = Digest::SHA1.hexdigest(url)
         img.attr('src', rewritten)
         map.merge(url => rewritten)
       end
