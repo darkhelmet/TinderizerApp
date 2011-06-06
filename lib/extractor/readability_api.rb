@@ -6,7 +6,7 @@ require 'maybe_monad'
 require 'java'
 require 'digest/sha1'
 require 'uri'
-require 'image_monster'
+require 'thread_storm'
 
 java_import org.jsoup.Jsoup
 
@@ -37,15 +37,28 @@ module Extractor
     end
 
     def rewrite_and_download_images(html)
+      pool = ThreadStorm.new(size: 5)
       doc = Jsoup.parse(html)
-      image_map = doc.get_elements_by_tag('img').inject({}) do |map, img|
+      doc.get_elements_by_tag('img').each do |img|
         url = img.attr('src')
-        rewritten = Digest::SHA1.hexdigest(url)
-        img.attr('src', rewritten)
-        map.merge(url => rewritten)
+        pool.execute do
+          data, filename = download_image_or_default(url)
+          File.open(File.join(destination, filename), 'w') { |f| f.write(data) }
+          img.attr('src', filename)
+        end
       end
-      ImageMonster.eat(image_map, destination)
+      pool.join
       doc.get_elements_by_tag('body').first.html
+    end
+
+    def download_image_or_default(url)
+      hash = Digest::SHA1.hexdigest(url)
+      resp = RestClient.get(url)
+      ext = resp.headers[:content_type].split('/').last
+      [resp, [hash, ext].join('.')]
+    rescue => boom
+      p boom.message
+      ['', hash]
     end
   end
 end
