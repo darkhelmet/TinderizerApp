@@ -13,7 +13,7 @@ get '/ajax/submit.json' do
   content_type(:json)
   redis = settings.redis
   email, url = params.values_at(:email, :url)
-  User.limit(redis, email, 60) do
+  User.limit(redis, email, settings.limit) do
     key = Digest::SHA1.hexdigest([email, url, Time.now.to_s].join(':'))
     message = { email: email, url: url, key: key }
     redis.set(key, 'Working...')
