@@ -26,9 +26,15 @@ module User
     end
 
     def notify(redis, key, message)
+      failed = false
       redis.multi do
         redis.set(key, message)
         redis.expire(key, 30)
+      end
+    rescue SystemCallError => boom
+      unless failed
+        failed = true
+        retry
       end
     end
 
