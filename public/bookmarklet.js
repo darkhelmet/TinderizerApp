@@ -3,7 +3,6 @@
     if ('XDomainRequest' in window) {
       var xdr = new XDomainRequest();
       xdr.onload = function() {
-        alert(xdr.responseText);
         success(JSON.parse(xdr.responseText));
       };
       xdr.open('GET', url);
