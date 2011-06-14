@@ -1,4 +1,5 @@
 require 'extractor/base'
+require 'active_support'
 require 'rest-client'
 require 'cgi'
 require 'json'
@@ -18,9 +19,16 @@ module Extractor
     def extract!
       response = JSON.parse(RestClient.get(build_url(url)))
       title, domain, author, html = response.values_at(*%w(title domain author content))
+      @outfile = File.join(destination, "#{title.parameterize.to_s}.html")
       write_html(rewrite_and_download_images(html), title)
       author = Maybe(author).or_else('Kindlebility') + " (#{domain})"
       [outfile, title, author]
+    end
+
+  protected
+
+    def outfile
+      @outfile
     end
 
   private

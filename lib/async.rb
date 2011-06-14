@@ -16,6 +16,10 @@ class Async
     tmp = Dir.tmpdir
     redis = Redis.new
 
+    extension_swap = ->(path, after) do
+      path.gsub(/[^.]+$/, after)
+    end
+
     # Cleanup files after they are no longer needed
     cleanup_queue = GirlFriday::WorkQueue.new(:cleanup) do |directory|
       FileUtils.rm_rf(directory)
@@ -38,7 +42,7 @@ class Async
     # Run kindlegen
     kindlegen_queue = SafeQueue.build(:kindlegen) do |message|
       key, html, title, working, epub, url = message.values_at(:key, :html, :title, :working, :epub, :url)
-      mobi = File.join(working, 'out.mobi')
+      mobi = extension_swap.call(epub, 'mobi')
       pid = Spoon.spawnp('kindlegen', epub)
       _, status = Process.waitpid2(pid)
       # Will probably run with warnings, and return 1 instead
@@ -52,8 +56,8 @@ class Async
       end
     end
 
-    write_epub_xml = proc do |working, title, author|
-      xml = File.join(working, 'out.xml')
+    write_epub_xml = proc do |epub, title, author|
+      xml = extension_swap.call(epub, 'xml')
       File.open(xml, 'w') do |f|
         f.write("<dc:title>#{title}</dc:title>\n<dc:creator>#{author}</dc:creator>\n")
       end
@@ -63,8 +67,8 @@ class Async
     # Run pandoc
     pandoc_queue = SafeQueue.build(:pandoc) do |message|
       key, html, title, author, working, url = message.values_at(:key, :html, :title, :author, :working, :url)
-      xml = write_epub_xml.call(working, title, author)
-      epub = File.join(working, 'out.epub')
+      epub = extension_swap.call(html, 'epub')
+      xml = write_epub_xml.call(epub, title, author)
       pid = Spoon.spawnp('pandoc', '--epub-metadata', xml, '-o', epub, html)
       _, status = Process.waitpid2(pid)
       if status.success?
