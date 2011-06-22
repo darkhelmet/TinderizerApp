@@ -17,3 +17,7 @@ gem 'hoptoad_notifier', '~> 2.4.9' # Errors
 gem 'newrelic_rpm', '~> 3.0.0' # Performance monitoring
 gem 'jruby-openssl', '~> 0.7.4' # SSL stuff
 gem 'thread_storm', '~> 0.7.0' # Thread pool
+
+group :development do
+  gem 'ruby-debug'
+end
