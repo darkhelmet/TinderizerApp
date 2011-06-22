@@ -5,15 +5,19 @@ require 'setup'
 require 'environment'
 require 'uri'
 
+Host = 'kindlebility.com'
+
 before do
   # This needs to be set to allow the JSON to be had over XMLHttpRequest
   headers 'Access-Control-Allow-Origin' => '*'
   if production?
     uri = URI(request.url)
-    unless uri.path.start_with?('/ajax')
-      uri.port = 80
-      uri.host = 'kindlebility.com'
-      halt(301, { 'Location' => uri.to_s }, 'Redirecting')
+    unless uri.host == Host
+      unless uri.path.start_with?('/ajax')
+        uri.port = 80
+        uri.host = Host
+        halt(301, { 'Location' => uri.to_s }, 'Redirecting')
+      end
     end
   end
 end
