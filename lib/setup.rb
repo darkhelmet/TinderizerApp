@@ -6,4 +6,4 @@ HoptoadNotifier.configure do |config|
   config.api_key = JSON.parse(File.read('config/config.json'))['hoptoad']
 end
 
-%w(haml yuicompressor redis digest/sha1 lib/sinatra/render async user jruby_ssl_fix).each { |lib| require lib }
+%w(haml redis digest/sha1 lib/sinatra/render async user jruby_ssl_fix).each { |lib| require lib }
