@@ -45,8 +45,8 @@ module Extractor
     end
 
     def rewrite_and_download_images(html)
+      doc = Jsoup.parse(html)
       ThreadStorm.new(size: 5) do |pool|
-        doc = Jsoup.parse(html)
         doc.get_elements_by_tag('img').each do |img|
           url = img.attr('src')
           pool.execute do
