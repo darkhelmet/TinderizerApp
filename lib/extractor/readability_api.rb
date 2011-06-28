@@ -45,17 +45,17 @@ module Extractor
     end
 
     def rewrite_and_download_images(html)
-      pool = ThreadStorm.new(size: 5)
-      doc = Jsoup.parse(html)
-      doc.get_elements_by_tag('img').each do |img|
-        url = img.attr('src')
-        pool.execute do
-          data, filename = download_image_or_default(url)
-          File.open(File.join(destination, filename), 'w') { |f| f.write(data) }
-          img.attr('src', filename)
+      ThreadStorm.new(size: 5) do |pool|
+        doc = Jsoup.parse(html)
+        doc.get_elements_by_tag('img').each do |img|
+          url = img.attr('src')
+          pool.execute do
+            data, filename = download_image_or_default(url)
+            File.open(File.join(destination, filename), 'w') { |f| f.write(data) }
+            img.attr('src', filename)
+          end
         end
       end
-      pool.join
       doc.get_elements_by_tag('body').first.html
     end
 
