@@ -4,7 +4,7 @@ gem 'sinatra', '~> 1.2.6' # Framework
 gem 'rack', '1.2.3'
 gem 'haml', '~> 3.1.1' # Templating
 gem 'girl_friday', '~> 0.9.1' # Async processing
-gem 'yuicompressor', '~> 1.2.0' # Compressing JS/CSS inside jruby itself
+# gem 'yuicompressor', '~> 1.2.0' # Compressing JS/CSS inside jruby itself
 gem 'redis', '~> 2.2.0' # Talking to redis
 gem 'postmark', '~> 0.9.6' # Sending email
 gem 'mail', '~> 2.3.0' # Sending email

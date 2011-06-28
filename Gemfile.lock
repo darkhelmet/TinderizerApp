@@ -44,7 +44,6 @@ GEM
       jruby-rack (>= 1.0.9)
       trinidad_jars (>= 1.0.1)
     trinidad_jars (1.0.1)
-    yuicompressor (1.2.0)
 
 PLATFORMS
   java
@@ -67,4 +66,3 @@ DEPENDENCIES
   sinatra (~> 1.2.6)
   thread_storm (~> 0.7.0)
   trinidad (~> 1.2.0)
-  yuicompressor (~> 1.2.0)
