@@ -1,3 +1,0 @@
-[submodule "vendor/goose"]
-	path = vendor/goose
-	url = git://github.com/darkhelmet/goose.git

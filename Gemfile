@@ -4,7 +4,6 @@ gem 'sinatra', '~> 1.2.6' # Framework
 gem 'rack', '1.2.3'
 gem 'haml', '~> 3.1.1' # Templating
 gem 'girl_friday', '~> 0.9.1' # Async processing
-# gem 'yuicompressor', '~> 1.2.0' # Compressing JS/CSS inside jruby itself
 gem 'redis', '~> 2.2.0' # Talking to redis
 gem 'postmark', '~> 0.9.6' # Sending email
 gem 'mail', '~> 2.3.0' # Sending email
@@ -17,6 +16,7 @@ gem 'hoptoad_notifier', '~> 2.4.9' # Errors
 gem 'newrelic_rpm', '~> 3.0.0' # Performance monitoring
 gem 'jruby-openssl', '~> 0.7.4' # SSL stuff
 gem 'thread_storm', '~> 0.7.0' # Thread pool
+gem 'citrus', :git => 'git://github.com/mjijackson/citrus.git', :ref => '7d03bcbeda0958a9bcdcbd7a3704ab156fdf515f'
 
 group :development do
   gem 'ruby-debug'

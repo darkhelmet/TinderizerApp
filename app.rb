@@ -4,6 +4,7 @@ require 'sinatra'
 require 'setup'
 require 'environment'
 require 'uri'
+require 'cgi'
 
 Host = 'kindlebility.com'
 
@@ -26,6 +27,7 @@ get '/ajax/submit.json' do
   content_type(:json)
   redis = settings.redis
   email, url = params.values_at(:email, :url)
+  email = CGI.unescape(email) # Just in case...
   User.limit(redis, email, settings.limit) do
     key = Digest::SHA1.hexdigest([email, url, Time.now.to_s].join(':'))
     message = { email: email, url: url, key: key }
@@ -38,7 +40,7 @@ end
 get '/ajax/status/:id.json' do |id|
   content_type(:json)
   status = settings.redis.get(id)
-  done = !status.match(/done|failed|limited/i).nil?
+  done = !status.match(/done|failed|limited|invalid/i).nil?
   { message: status, done: done }.to_json
 end
 

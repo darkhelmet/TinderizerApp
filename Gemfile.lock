@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/mjijackson/citrus.git
+  revision: 7d03bcbeda0958a9bcdcbd7a3704ab156fdf515f
+  ref: 7d03bcbeda0958a9bcdcbd7a3704ab156fdf515f
+  specs:
+    citrus (2.4.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -50,6 +57,7 @@ PLATFORMS
 
 DEPENDENCIES
   RedCloth (~> 4.2.7)
+  citrus!
   girl_friday (~> 0.9.1)
   haml (~> 3.1.1)
   hoptoad_notifier (~> 2.4.9)

@@ -17,11 +17,11 @@ module User
     def mail(email, title, url, mobi)
       m = Mail.new
       m.delivery_method(Mail::Postmark, api_key: Config['postmark'])
-      m.from Config['email']['from']
-      m.to email
-      m.subject 'convert'
-      m.body "Straight to your Kindle! #{title}: #{url}"
-      m.postmark_attachments = [File.open(mobi)]
+      m.from(Config['email']['from'])
+      m.to(email)
+      m.subject('convert')
+      m.body("Straight to your Kindle! #{title}: #{url}")
+      m.postmark_attachments = Array(File.open(mobi))
       m.deliver!
     end
 

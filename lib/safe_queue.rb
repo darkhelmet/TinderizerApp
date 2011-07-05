@@ -10,7 +10,7 @@ module SafeQueue
           block.call(message)
         rescue Exception => boom
           HoptoadNotifier.notify_or_ignore(boom)
-          User.notify(RedisClient, message[:key], "Unexpected error occurred; processing failed. Developer notified.")
+          User.notify(RedisClient, message[:key], "Processing failed; developer notified. Try remaking the bookmarklet.")
           Loggly.error("Caught error in queue #{queue}: #{boom.message}")
         end
       end
