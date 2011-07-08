@@ -21,7 +21,7 @@ module User
       m.to(email)
       m.subject('convert')
       m.body("Straight to your Kindle! #{title}: #{url}")
-      m.postmark_attachments = Array(File.open(mobi))
+      m.postmark_attachments = [File.open(mobi)]
       m.deliver!
     end
 
