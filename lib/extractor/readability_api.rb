@@ -8,8 +8,7 @@ require 'java'
 require 'digest/sha1'
 require 'uri'
 require 'thread_storm'
-
-java_import org.jsoup.Jsoup
+require 'nokogiri'
 
 module Extractor
   class ReadabilityApi < Base
@@ -45,18 +44,18 @@ module Extractor
     end
 
     def rewrite_and_download_images(html)
-      doc = Jsoup.parse(html)
+      doc = Nokogiri::HTML(html)
       ThreadStorm.new(size: 5) do |pool|
-        doc.get_elements_by_tag('img').each do |img|
-          url = img.attr('src')
+        doc.search('img').each do |img|
+          url = img['src']
           pool.execute do
             data, filename = download_image_or_default(url)
             File.open(File.join(destination, filename), 'w') { |f| f.write(data) }
-            img.attr('src', filename)
+            img['src'] = filename
           end
         end
       end
-      doc.get_elements_by_tag('body').first.html
+      doc.search('body').first.to_html
     end
 
     def download_image_or_default(url)

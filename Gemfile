@@ -16,6 +16,7 @@ gem 'hoptoad_notifier', '~> 2.4.9' # Errors
 gem 'newrelic_rpm', '~> 3.0.0' # Performance monitoring
 gem 'jruby-openssl', '~> 0.7.4' # SSL stuff
 gem 'thread_storm', '~> 0.7.0' # Thread pool
+gem 'nokogiri', '~> 1.5.0'
 gem 'citrus', :git => 'git://github.com/mjijackson/citrus.git', :ref => '7d03bcbeda0958a9bcdcbd7a3704ab156fdf515f'
 
 group :development do
