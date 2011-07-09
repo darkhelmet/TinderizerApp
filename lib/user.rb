@@ -39,14 +39,13 @@ module User
     end
 
     def limit(redis, email, time)
-      begin
-        redis.eval(Lua, 1, Digest::SHA1.hexdigest(email), time)
-      rescue RuntimeError => limited
-        return {
-          message: "Sorry, but there's a rate-limit, and you've hit it! Try again in a minute.",
-          limited: true
-        }.to_json
-      end
+      redis.eval(Lua, 1, Digest::SHA1.hexdigest(email), time)
+    rescue RuntimeError => limited
+      {
+        message: "Sorry, but there's a rate-limit, and you've hit it! Try again in a minute.",
+        limited: true
+      }.to_json
+    else
       yield
     end
   end
