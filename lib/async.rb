@@ -5,8 +5,6 @@ end
 require 'citrus/grammars'
 Citrus.require('email')
 
-# require 'extractor/goose'
-# require 'extractor/scala_readability'
 require 'extractor/readability_api'
 
 class Async
@@ -57,15 +55,16 @@ private
   end
 
   def send_email(message)
-    key, email, url, title, mobi = message.values_at(:key, :email, :url, :title, :mobi)
+    key, email, url, title, mobi, working = message.values_at(:key, :email, :url, :title, :mobi, :working)
     begin
       EmailAddress.parse(email)
     rescue Citrus::ParseError
-      Loggly.error("The email #{email} failed to validate!")
+      @error << { error: "The email '#{email}' failed to validate!", working: working }
       User.notify(@redis, key, 'Your email appears invalid. Try carefully remaking the bookmarklet.')
     else
       User.mail(email, title, url, mobi)
       User.notify(@redis, key, 'All done! Grab your Kindle and hang tight!')
+      @cleanup << working
     end
   end
 
