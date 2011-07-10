@@ -109,9 +109,13 @@ private
       User.notify(@redis, key, 'First stage finished...')
       message.merge!(html: outfile, title: title, author: author, working: working)
       @pandoc << message
+    rescue RestClient::ExceptionWithResponse => failed_request
+      HoptoadNotifier.notify_or_ignore(boom)
+      @error << { error: "Failed extracting URL(#{url}) with response: #{failed_request.response}", working: working }
+      User.notify(@redis, key, 'Failed extracting this page. Developer notified.')
     rescue Exception => boom
       HoptoadNotifier.notify_or_ignore(boom)
-      @error << { error: "Failed extracting URL: #{url}", working: working }
+      @error << { error: "Failed extracting URL(#{url}) with error: #{boom.message}", working: working }
       User.notify(@redis, key, 'Failed extracting this page. Developer notified.')
     end
   end
