@@ -20,6 +20,10 @@
     }
   };
 
+  var escapeRegex = function(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  };
+
   var log = function(message) {
     if ((typeof console != "undefined" && console !== null) && (console.log != null)) {
       console.log("** kindlebility **\t" + message);
@@ -65,9 +69,22 @@
     });
   };
 
-  if ((window.location.protocol + "//" + window.location.host + "/") == url) {
-    alert("You need to run this on an article page! Main or home pages don't work very well.")
-  } else {
-    kindlebility();
+  var checks = {
+    "You need to run this on an article page! Main or home pages don't work very well.": new RegExp(escapeRegex(window.location.protocol + "//" + window.location.host + "/") + '$'),
+    'There is nothing to do on about:blank!': /about:blank/,
+    'You need to run this on a publicly accessible HTML page!': /\.(pdf|jpg)$/i,
+    'Run this on the raw page, not a Readability page!': /^https?:\/\/www.readability.com\/articles\//i
+  };
+
+  for (var message in checks) {
+    if (checks.hasOwnProperty(message)) {
+      if (checks[message].test(url)) {
+        alert(message);
+        body.removeChild(div);
+        return;
+      }
+    }
   }
+
+  kindlebility();
 })(document.location.href);
