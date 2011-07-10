@@ -1,7 +1,6 @@
 require 'extractor/base'
 require 'active_support'
 require 'rest-client'
-require 'cgi'
 require 'json'
 require 'maybe_monad'
 require 'java'
@@ -9,6 +8,7 @@ require 'digest/sha1'
 require 'uri'
 require 'thread_storm'
 require 'nokogiri'
+require 'rack'
 
 module Extractor
   class ReadabilityApi < Base
@@ -40,7 +40,7 @@ module Extractor
     end
 
     def build_url(url)
-      Root + "?url=" + CGI.escape(url) + "&token=" + CGI.escape(Token)
+      Root + "?url=" + Rack::Utils.escape(url) + "&token=" + Rack::Utils.escape(Token)
     end
 
     def rewrite_and_download_images(html)
