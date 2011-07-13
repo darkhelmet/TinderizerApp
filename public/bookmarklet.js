@@ -48,7 +48,7 @@
     var params = "?url=" + encodeURIComponent(url) + "&email=" + encodeURIComponent(to) + "&t=" + (new Date()).getTime();
     request("http://" + host + "/ajax/submit.json" + params, function(submit) {
       notify(submit.message);
-      if (submit.limited) {
+      if (submit.limited || !submit.id) {
         setTimeout(function() {
           body.removeChild(div);
         }, 2500);

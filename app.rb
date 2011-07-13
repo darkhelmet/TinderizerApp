@@ -29,12 +29,13 @@ get '/ajax/submit.json' do
   email, url = params.values_at(:email, :url)
   email = CGI.unescape(email).strip # Just in case...
   User.limit(redis, email, settings.limit) do
-    # check blacklist
-    key = Digest::SHA1.hexdigest([email, url, Time.now.to_s].join(':'))
-    message = { email: email, url: url, key: key }
-    redis.set(key, 'Working...')
-    settings.async.extractor << message
-    { :message => 'Submitted! Hang tight...', :id => key }.to_json
+    Blacklist.unless_blacklisted(redis, url) do
+      key = Digest::SHA1.hexdigest([email, url, Time.now.to_s].join(':'))
+      message = { email: email, url: url, key: key }
+      redis.set(key, 'Working...')
+      settings.async.extractor << message
+      { :message => 'Submitted! Hang tight...', :id => key }.to_json
+    end
   end
 end
 

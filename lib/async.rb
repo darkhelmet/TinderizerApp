@@ -1,4 +1,4 @@
-%w(java tmpdir girl_friday safe_queue spoon redis json user fileutils hoptoad_notifier).each do |lib|
+%w(java tmpdir girl_friday safe_queue spoon redis json user fileutils hoptoad_notifier blacklist).each do |lib|
   require lib
 end
 
@@ -139,11 +139,11 @@ private
       message.merge!(html: outfile, title: title, author: author, working: working)
       @pandoc << message
     rescue Citrus::ParseError, UrlInvalidException
-      # blacklist
+      Blacklist.blacklist!(@redis, url)
       error("The URL(#{url}) is not valid for extraction", working, :notice)
       notify(key, 'This URL appears invalid. Sorry :(')
     rescue ReadabilityFailed, Extractor::BlacklistError
-      # blacklist
+      Blacklist.blacklist!(@redis, url)
       notify(key, 'Readability failed extracting this URL.')
       cleanup(working)
     rescue ReadabilityError
