@@ -157,7 +157,3 @@ respawn
 
 exec sudo -u darkhelmet ./production.sh
 END
-
-# scala
-wget http://www.scala-lang.org/downloads/distrib/files/scala-2.9.0.final-installer.jar
-sudo java -jar scala-2.9.0.final-installer.jar

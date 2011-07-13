@@ -1,4 +1,3 @@
-require 'java'
-Dir['lib/*.jar'].each { |jar| require jar }
-$CLASSPATH << 'classes'
-$CLASSPATH << 'vendor/goose/target/classes'
+$: << File.expand_path(File.join('.', 'lib'))
+require 'bundler/setup'
+require 'citrus/grammars'
