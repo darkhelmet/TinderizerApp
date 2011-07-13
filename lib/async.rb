@@ -51,7 +51,7 @@ private
   def error_handler(message)
     error, directory = message.values_at(:error, :working)
     @cleanup << directory
-    Loggly.error(error)
+    Loggly.send(message.fetch(:severity, :error), error)
   end
 
   def send_email(message)
@@ -59,7 +59,7 @@ private
     begin
       EmailAddress.parse(email)
     rescue Citrus::ParseError
-      @error << { error: "The email '#{email}' failed to validate!", working: working }
+      @error << { error: "The email '#{email}' failed to validate!", working: working, severity: :notice }
       User.notify(@redis, key, 'Your email appears invalid. Try carefully remaking the bookmarklet.')
     else
       User.mail(email, title, url, mobi)
