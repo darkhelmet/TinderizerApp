@@ -1,4 +1,6 @@
 module Extractor
+  class BlacklistError < StandardError; end
+
   class Base
     attr_reader :url, :destination
 

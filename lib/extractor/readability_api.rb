@@ -17,6 +17,7 @@ module Extractor
 
     def extract!
       response = JSON.parse(RestClient.get(build_url(url)))
+      raise BlacklistError if response['title'] =~ /Article Could not be Parsed/i
       title, domain, author, html = response.values_at(*%w(title domain author content))
       @outfile = File.join(destination, "#{title.parameterize.to_s}.html")
       write_html(rewrite_and_download_images(html), title)

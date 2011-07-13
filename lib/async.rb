@@ -4,10 +4,29 @@ end
 
 require 'citrus/grammars'
 Citrus.require('email')
+Citrus.require('uri')
 
 require 'extractor/readability_api'
 
 class Async
+  class UrlInvalidException < StandardError; end
+
+  module ReadabilityFailed
+    def ===(boom)
+      if json = boom.respond_to?(:response) and !boom.response.empty? and JSON.parse(boom.response)
+        json['message'] =~ /^Could not parse the content/
+      end
+    end
+  end
+
+  module ReadabilityError
+    def ===(boom)
+      if json = boom.respond_to?(:response) and !boom.response.empty? and JSON.parse(boom.response)
+        json['message'] =~ /^Readability encountered a server error/
+      end
+    end
+  end
+
   Config = JSON.parse(File.read('config/config.json'))
 
   attr_reader :extractor, :error
@@ -44,6 +63,14 @@ private
     xml
   end
 
+  def notify(key, message)
+    User.notify(@redis, key, message)
+  end
+
+  def error(message, working, severity = :error)
+    @error << { error: message, working: working, severity: severity }
+  end
+
   def cleanup(directory)
     FileUtils.rm_rf(directory) if File.exists?(directory)
   end
@@ -59,11 +86,11 @@ private
     begin
       EmailAddress.parse(email)
     rescue Citrus::ParseError
-      @error << { error: "The email '#{email}' failed to validate!", working: working, severity: :notice }
-      User.notify(@redis, key, 'Your email appears invalid. Try carefully remaking the bookmarklet.')
+      error("The email '#{email}' failed to validate!", working, :notice)
+      notify(key, 'Your email appears invalid. Try carefully remaking the bookmarklet.')
     else
       User.mail(email, title, url, mobi)
-      User.notify(@redis, key, 'All done! Grab your Kindle and hang tight!')
+      notify(key, 'All done! Grab your Kindle and hang tight!')
       @cleanup << working
     end
   end
@@ -75,12 +102,12 @@ private
     _, status = Process.waitpid2(pid)
     # Will probably run with warnings, and return 1 instead
     if File.exists?(mobi)
-      User.notify(@redis, key, 'Third stage finished...')
+      notify(key, 'Third stage finished...')
       message.merge!(mobi: mobi)
       @emails << message
     else
-      @error << { error: "kindlegen blew up on #{url}", working: working }
-      User.notify(@redis, key, 'Third stage failed. Developer notified.')
+      error("kindlegen blew up on #{url}", working)
+      notify(key, 'Third stage failed. Developer notified.')
     end
   end
 
@@ -91,12 +118,12 @@ private
     pid = Spoon.spawnp('pandoc', '--epub-metadata', xml, '-o', epub, html)
     _, status = Process.waitpid2(pid)
     if status.success?
-      User.notify(@redis, key, 'Second stage finished...')
+      notify(key, 'Second stage finished...')
       message.merge!(epub: epub)
       @kindlegen << message
     else
-      @error << { error: "pandoc blew up on #{url}", working: working }
-      User.notify(@redis, key, 'Second stage failed. Developer notified.')
+      error("pandoc blew up on #{url}", working)
+      notify(key, 'Second stage failed. Developer notified.')
     end
   end
 
@@ -105,18 +132,30 @@ private
     working = File.join(@tmp, key)
     ex = Extractor::ReadabilityApi.new(url, working)
     begin
+      uri = UniformResourceIdentifier.parse(url)
+      raise UrlInvalidException, "'#{uri.scheme}' is an invalid scheme" unless uri.scheme.to_s =~ /https?/i
       outfile, title, author = ex.extract!
-      User.notify(@redis, key, 'First stage finished...')
+      notify(key, 'First stage finished...')
       message.merge!(html: outfile, title: title, author: author, working: working)
       @pandoc << message
+    rescue Citrus::ParseError, UrlInvalidException
+      # blacklist
+      error("The URL(#{url}) is not valid for extraction", working, :notice)
+      notify(key, 'This URL appears invalid. Sorry :(')
+    rescue ReadabilityFailed, Extractor::BlacklistError
+      # blacklist
+      notify(key, 'Readability failed extracting this URL.')
+      cleanup(working)
+    rescue ReadabilityError
+      notify(key, 'Readability had an error, try again in a few mintues.')
+      cleanup(working)
     rescue RestClient::ExceptionWithResponse => failed_request
-      HoptoadNotifier.notify_or_ignore(failed_request)
-      @error << { error: "Failed extracting URL(#{url}) with response: #{failed_request.response}", working: working }
-      User.notify(@redis, key, 'Failed extracting this page. Developer notified.')
+      error("Failed extracting URL(#{url}) with response: #{failed_request.response}", working)
+      notify(key, 'Failed extracting this page. Developer notified.')
     rescue Exception => boom
       HoptoadNotifier.notify_or_ignore(boom)
-      @error << { error: "Failed extracting URL(#{url}) with error: #{boom.message}", working: working }
-      User.notify(@redis, key, 'Failed extracting this page. Developer notified.')
+      error("Failed extracting URL(#{url}) with error: #{boom.message}", working)
+      notify(key, 'Failed extracting this page. Developer notified.')
     end
   end
 end
