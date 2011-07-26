@@ -30,7 +30,7 @@ $(document).ready(function() {
   });
 
   $.get('/static/donate.html', function(data) {
-    $('.center:last').append(data);
+    $('#footer').after(data);
   });
 
   $(document).bind('reveal.facebox', function() {
