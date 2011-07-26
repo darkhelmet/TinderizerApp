@@ -29,10 +29,6 @@ $(document).ready(function() {
     $('#bookmarklet').attr('href', script);
   });
 
-  $.get('/static/donate.html', function(data) {
-    $('#footer').after(data);
-  });
-
   $(document).bind('reveal.facebox', function() {
     $('#ios').html($('#bookmarklet').attr('href'));
   });
