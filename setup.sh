@@ -75,7 +75,7 @@ sudo aptitude update
 echo 'sun-java6-bin shared/accepted-sun-dlj-v1-1 boolean true' | sudo debconf-set-selections
 sudo aptitude install sun-java6-jdk
 
-jruby_version=1.6.4
+export jruby_version=1.6.4
 
 # Install jruby
 wget http://jruby.org.s3.amazonaws.com/downloads/$jruby_version/jruby-bin-$jruby_version.tar.gz
