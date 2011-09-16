@@ -21,7 +21,7 @@ module Extractor
       title, domain, author, html = response.values_at(*%w(title domain author content))
       @outfile = File.join(destination, "#{title.parameterize.to_s}.html")
       write_html(rewrite_and_download_images(html), title)
-      author = Maybe(author).or_else('Kindlebility') + " (#{domain})"
+      author = Maybe(author).or_else('Tinderizer') + " (#{domain})"
       [outfile, title, author]
     end
 

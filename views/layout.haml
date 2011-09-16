@@ -1,12 +1,12 @@
 !!! 5
 %html
   %head
-    %title kindlebility - Sending articles to your Kindle, one click at a time!
+    %title Tinderizer - Chopping up the web for your Kindle device!
     %link{ :href => '/static/favicon.jpg', :rel => 'shortcut icon', :type => 'image/jpg' }
     %meta{ :content => "#{request.host}:#{request.port}", :name => 'host' }
     %meta{ :content => 'text/html, charset=utf-8', 'http-equiv' => 'Content-Type'}
     %meta{ :content => 'Send articles to your Kindle with a single click of a bookmarklet.', :name => 'description' }
-    %link{ :href => 'http://fonts.googleapis.com/css?family=Lobster&subset=latin', :rel => 'stylesheet', :type => 'text/css' }
+    %link{ :href => 'http://fonts.googleapis.com/css?family=Cabin+Sketch:700', :rel => 'stylesheet', :type => 'text/css' }
     %link{ :href => 'http://fonts.googleapis.com/css?family=Josefin+Slab&subset=latin', :rel => 'stylesheet', :type => 'text/css' }
     %link{ :href => '/static/style.css', :rel => 'stylesheet', :type => 'text/css' }
     %link{ :href => '/static/facebox.css', :rel => 'stylesheet', :type => 'text/css' }
@@ -24,8 +24,8 @@
       })();
   %body
     .center
-      %h1#main.text_shadow kindlebility
-      #tagline Sending articles to your Kindle, one click at a time!
+      %h1#main.text_shadow Tinderizer
+      #tagline Chopping up the web for your Kindle device!
       :plain
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="margin: 25px;">
         <input type="hidden" name="cmd" value="_s-xclick">

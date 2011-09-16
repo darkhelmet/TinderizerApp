@@ -3,7 +3,7 @@ $(document).ready(function() {
   $('#email').change(function() {
     var script = "javascript:(function() { \
       var setupDiv = function() { \
-        var id = 'kindlebility'; \
+        var id = 'Tinderizer'; \
         var div = document.getElementById(id); \
         var body = document.getElementsByTagName('body')[0]; \
         if (null != div) { \

@@ -1,2 +1,2 @@
 export JRUBY_OPTS="--1.9 --client -J-Djruby.reify.classes=true -J-Xmx1024m -J-XX:+UseConcMarkSweepGC -J-XX:+UseParNewGC"
-rvm use jruby-1.6.2@kindlebility3
+rvm use jruby-1.6.4@Tinderizer

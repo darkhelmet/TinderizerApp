@@ -6,7 +6,7 @@ require 'environment'
 require 'uri'
 require 'cgi'
 
-Host = 'kindlebility.com'
+Host = 'tinderizer.com'
 
 before do
   # This needs to be set to allow the JSON to be had over XMLHttpRequest

@@ -26,12 +26,12 @@
 
   var log = function(message) {
     if ((typeof console != "undefined" && console !== null) && (console.log != null)) {
-      console.log("** kindlebility **\t" + message);
+      console.log("** Tinderizer **\t" + message);
     }
   };
 
   var body = document.getElementsByTagName('body')[0];
-  var div = document.getElementById('kindlebility');
+  var div = document.getElementById('Tinderizer') || document.getElementById('kindlebility');
   var host = div.getAttribute('data-host');
   var to = div.getAttribute('data-email');
   var notify = function(message) {
@@ -44,7 +44,7 @@
   div.style.fontSize = '12px';
 
   // TODO: Some sort of detection of a failure
-  var kindlebility = function() {
+  var Tinderizer = function() {
     var params = "?url=" + encodeURIComponent(url) + "&email=" + encodeURIComponent(to) + "&t=" + (new Date()).getTime();
     request("http://" + host + "/ajax/submit.json" + params, function(submit) {
       notify(submit.message);
@@ -86,5 +86,5 @@
     }
   }
 
-  kindlebility();
+  Tinderizer();
 })(document.location.href);

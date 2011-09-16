@@ -75,7 +75,7 @@ sudo aptitude update
 echo 'sun-java6-bin shared/accepted-sun-dlj-v1-1 boolean true' | sudo debconf-set-selections
 sudo aptitude install sun-java6-jdk
 
-jruby_version=1.6.2
+jruby_version=1.6.4
 
 # Install jruby
 wget http://jruby.org.s3.amazonaws.com/downloads/$jruby_version/jruby-bin-$jruby_version.tar.gz
@@ -145,13 +145,13 @@ END
 sudo /etc/init.d/nginx restart
 
 # Upstart script for the app
-cat | sudo tee /etc/init/kindlebility.conf <<END
-description "kindlebility"
+cat | sudo tee /etc/init/tinderizer.conf <<END
+description "tinderizer"
 
 start on runlevel [2345]
 stop on runlevel [06]
 
-chdir /home/darkhelmet/kindlebility3
+chdir /home/darkhelmet/tinderizer
 
 respawn
 
