@@ -8,6 +8,11 @@ body {
   margin: 0px auto;
 }
 
+#main a {
+  text-decoration: none;
+  color: black;
+}
+
 #tagline {
   display: block;
   margin-bottom: 30px;
