@@ -103,3 +103,7 @@ input {
 .part_two .vs6 img {
   height: 220px;
 }
+
+.notice {
+  font-size: 80%;
+}
