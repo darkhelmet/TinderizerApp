@@ -63,6 +63,6 @@ get %r{/(firefox|safari|chrome|ie|ios)} do |page|
   haml(page.to_sym, :layout => false)
 end
 
-get %r{/(faq|bugs)} do |page|
+get %r{/(faq|bugs|contact)} do |page|
   haml(page.to_sym)
 end
