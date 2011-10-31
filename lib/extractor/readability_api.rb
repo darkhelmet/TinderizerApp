@@ -20,8 +20,8 @@ module Extractor
       raise BlacklistError if response['title'] =~ /Article Could not be Parsed/i
       title, domain, author, html = response.values_at(*%w(title domain author content))
       @outfile = File.join(destination, "#{title.parameterize.to_s}.html")
-      write_html(rewrite_and_download_images(html), title)
       author = Maybe(author).or_else('Tinderizer') + " (#{domain})"
+      write_html(rewrite_and_download_images(html), author, title)
       [outfile, title, author]
     end
 
@@ -33,10 +33,14 @@ module Extractor
 
   private
 
-    def write_html(html, title)
+    def write_html(html, author, title)
       File.open(outfile, 'w') do |f|
-        f.write("<h1>#{title}</h1>\n")
-        f.write(html)
+        f.write('<html>')
+        f.write(%Q{<meta content="text/html, charset=utf-8" http-equiv="Content-Type" />})
+        f.write(%Q{<meta content="#{author}" name="author" />})
+        f.write(%Q{<title>#{title}</title>})
+        f.write(html.sub('<body>', "<body>\n<h1>#{title}</h1>\n"))
+        f.write('<html/>')
       end
     end
 
