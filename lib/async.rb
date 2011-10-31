@@ -34,6 +34,7 @@ class Async
   # TODO: Cleanup
   def initialize
     @tmp = Dir.tmpdir
+    # @tmp = File.expand_path('tmp')
     @redis = Redis.new
     # Send errors to Loggly
     @error = GirlFriday::WorkQueue.new(:error, &method(:error_handler))
@@ -43,8 +44,6 @@ class Async
     @emails = SafeQueue.build(:email, &method(:send_email))
     # Run kindlegen
     @kindlegen = SafeQueue.build(:kindlegen, &method(:run_kindlegen))
-    # Run pandoc
-    @pandoc = SafeQueue.build(:pandoc, &method(:run_pandoc))
     # Run extraction
     @extractor = SafeQueue.build(:extractor, &method(:run_extractor))
   end
@@ -53,14 +52,6 @@ private
 
   def extension_swap(path, after)
     path.gsub(/[^.]+$/, after)
-  end
-
-  def write_epub_xml(epub, title, author)
-    xml = extension_swap(epub, 'xml')
-    File.open(xml, 'w') do |f|
-      f.write("<dc:title>#{title}</dc:title>\n<dc:creator>#{author}</dc:creator>\n")
-    end
-    xml
   end
 
   def notify(key, message)
@@ -96,33 +87,17 @@ private
   end
 
   def run_kindlegen(message)
-    key, html, title, working, epub, url = message.values_at(:key, :html, :title, :working, :epub, :url)
-    mobi = extension_swap(epub, 'mobi')
-    pid = Spoon.spawnp('kindlegen', epub)
+    key, html, title, author, working, html, url = message.values_at(:key, :html, :title, :author, :working, :html, :url)
+    mobi = extension_swap(html, 'mobi')
+    pid = Spoon.spawnp('kindlegen', html)
     _, status = Process.waitpid2(pid)
     # Will probably run with warnings, and return 1 instead
     if File.exists?(mobi)
-      notify(key, 'Third stage finished...')
+      notify(key, 'Second stage finished...')
       message.merge!(mobi: mobi)
       @emails << message
     else
       error("kindlegen blew up on #{url}", working)
-      notify(key, 'Third stage failed. Developer notified.')
-    end
-  end
-
-  def run_pandoc(message)
-    key, html, title, author, working, url = message.values_at(:key, :html, :title, :author, :working, :url)
-    epub = extension_swap(html, 'epub')
-    xml = write_epub_xml(epub, title, author)
-    pid = Spoon.spawnp('pandoc', '--epub-metadata', xml, '-o', epub, html)
-    _, status = Process.waitpid2(pid)
-    if status.success?
-      notify(key, 'Second stage finished...')
-      message.merge!(epub: epub)
-      @kindlegen << message
-    else
-      error("pandoc blew up on #{url}", working)
       notify(key, 'Second stage failed. Developer notified.')
     end
   end
@@ -137,7 +112,7 @@ private
       outfile, title, author = ex.extract!
       notify(key, 'First stage finished...')
       message.merge!(html: outfile, title: title, author: author, working: working)
-      @pandoc << message
+      @kindlegen << message
     rescue Citrus::ParseError, UrlInvalidException
       Blacklist.blacklist!(@redis, url)
       error("The URL(#{url}) is not valid for extraction", working, :notice)
