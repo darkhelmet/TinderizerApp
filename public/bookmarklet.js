@@ -34,6 +34,7 @@
   var div = document.getElementById('Tinderizer') || document.getElementById('kindlebility');
   var host = div.getAttribute('data-host');
   var to = div.getAttribute('data-email');
+  var redirect = false;
   var notify = function(message) {
     div.innerHTML = message;
     div.appendChild(document.createTextNode(' '));
@@ -45,6 +46,12 @@
 
   // TODO: Some sort of detection of a failure
   var Tinderizer = function() {
+    var validHost = /tinderizer/i;
+    if (!validHost.test(host)) {
+      if (confirm("Kindlebility has been renamed to Tinderizer. Please remake your bookmark to ensure it continues to work after the domain completely changes!\n\nPlease click OK to visit the new website and remake your bookmarklet when we're done here.")) {
+        redirect = true;
+      }
+    }
     var params = "?url=" + encodeURIComponent(url) + "&email=" + encodeURIComponent(to) + "&t=" + (new Date()).getTime();
     request("http://" + host + "/ajax/submit.json" + params, function(submit) {
       notify(submit.message);
@@ -59,10 +66,13 @@
         request("http://" + host + "/ajax/status/" + id + ".json?t=" + (new Date()).getTime(), function(status) {
           notify(status.message);
           if (status.done) {
+            clearInterval(timer);
             setTimeout(function() {
               body.removeChild(div);
+              if (redirect) {
+                window.location = 'http://tinderizer.com/';
+              }
             }, 2500);
-            clearInterval(timer);
           }
         });
       }, 500);
